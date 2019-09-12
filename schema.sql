@@ -7,4 +7,4 @@ CREATE TABLE Users (
 );
 
 INSERT INTO Users ("email", "nome", "encrypted_password") VALUES
-("foo@bar.tld", "Usuário Teste", "secret");
+("foo@bar.tld", "Usuário Teste", "$2b$12$9wVjTgsFGMex73gvCNn.HepYrvrrSTK8hqiNJxOda4NPrrEr4HxIm");

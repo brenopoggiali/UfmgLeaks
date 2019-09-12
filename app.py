@@ -4,9 +4,11 @@ import pandas as pd
 from flask import Flask, escape, request, render_template, redirect, url_for
 from flask_login import (LoginManager, login_user, logout_user, login_required,
             login_required, current_user, UserMixin)
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 app.secret_key = 'super secret string'
+bcrypt = Bcrypt(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -26,7 +28,7 @@ def user_loader(email):
   users = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
   if not users.size:
     return
-
+  
   user = User()
   user.id = email
   return user
@@ -45,10 +47,12 @@ def request_loader(request):
 
   # DO NOT ever store passwords in plaintext and always compare password
   # hashes using constant-time comparison!
-  password = pd.read_sql(f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
-  user.is_authenticated = request.form['password'] == password.iloc[0]['encrypted_password']
-  return user
-
+  pw_hash = pd.read_sql(f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
+  if bcrypt.check_password_hash(pw_hash.iloc[0]['encrypted_password'], request.form['password']):
+    user.is_authenticated = bcrypt.generate_password_hash(request.form['password']) == pw_hash.iloc[0]['encrypted_password']
+    return user
+  else:
+    return
 
 @app.route('/')
 def index():
@@ -63,9 +67,9 @@ def login(alert_auth = False):
     conn = sqlite3.connect('instance/database.sqlite')
     email = request.form['email']
     user = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
-    password = pd.read_sql(f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
     email_in_db = user.size
-    if email_in_db and request.form['password'] == password.iloc[0]['encrypted_password']:
+    pw_hash = pd.read_sql(f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
+    if email_in_db and bcrypt.check_password_hash(pw_hash.iloc[0]['encrypted_password'], request.form['password']):
       user = User()
       user.id = email
       login_user(user)

@@ -47,10 +47,7 @@ def request_loader(request):
   # hashes using constant-time comparison!
   password = pd.read_sql(f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
   user.is_authenticated = request.form['password'] == password.iloc[0]['encrypted_password']
-  print("AQUI", user.is_authenticated)
   return user
-
-##
 
 
 @app.route('/')

@@ -1,3 +1,6 @@
+import os
+import sqlite3
+import pandas as pd
 from flask import Flask, escape, request, render_template, redirect, url_for
 from flask_login import (LoginManager, login_user, logout_user, login_required,
             login_required, current_user, UserMixin)
@@ -6,38 +9,46 @@ app = Flask(__name__)
 app.secret_key = 'super secret string'
 login_manager = LoginManager()
 login_manager.init_app(app)
-users = {'foo@bar.tld': {'password': 'secret'}}
 
-##
+## DATABASE ##
+import db
+app.config['SQLITE3_DATABASE_URI']=os.path.join(app.instance_path, 'database.sqlite')
+db.init_app(app)
 
+## LOGIN ##
 class User(UserMixin):
-    pass
+  pass
 
 
 @login_manager.user_loader
 def user_loader(email):
-    if email not in users:
-        return
+  conn = sqlite3.connect('instance/database.sqlite')
+  users = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
+  if not users.size:
+    return
 
-    user = User()
-    user.id = email
-    return user
+  user = User()
+  user.id = email
+  return user
 
 
 @login_manager.request_loader
 def request_loader(request):
-    email = request.form.get('email')
-    if email not in users:
-        return
+  conn = sqlite3.connect('instance/database.sqlite')
+  email = request.form.get('email')
+  users = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
+  if not users.size:
+    return
 
-    user = User()
-    user.id = email
+  user = User()
+  user.id = email
 
-    # DO NOT ever store passwords in plaintext and always compare password
-    # hashes using constant-time comparison!
-    user.is_authenticated = request.form['password'] == users[email]['password']
-
-    return user
+  # DO NOT ever store passwords in plaintext and always compare password
+  # hashes using constant-time comparison!
+  password = pd.read_sql(f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
+  user.is_authenticated = request.form['password'] == password.iloc[0]['encrypted_password']
+  print("AQUI", user.is_authenticated)
+  return user
 
 ##
 
@@ -52,8 +63,12 @@ def login(alert_auth = False):
     if 'alert_auth' in request.args: alert_auth = request.args['alert_auth']
     return render_template('login.html', alert_auth=alert_auth, wrong_data=False)
   else:
+    conn = sqlite3.connect('instance/database.sqlite')
     email = request.form['email']
-    if email in users and request.form['password'] == users[email]['password']:
+    user = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
+    password = pd.read_sql(f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
+    email_in_db = user.size
+    if email_in_db and request.form['password'] == password.iloc[0]['encrypted_password']:
       user = User()
       user.id = email
       login_user(user)

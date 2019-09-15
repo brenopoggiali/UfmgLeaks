@@ -28,7 +28,7 @@ def user_loader(email):
   users = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
   if not users.size:
     return
-  
+
   user = User()
   user.id = email
   return user
@@ -92,10 +92,26 @@ def register():
 def dashboard():
   return render_template('dashboard.html')
 
-@app.route('/pesquisar')
+@app.route('/pesquisar', methods=['GET', 'POST'])
 @login_required
 def pesquisar():
-  return render_template('pesquisar.html')
+    if request.method == 'GET':
+        return render_template('pesquisar.html')
+    else:
+        arquivo = request.form['tipoArquivo']
+        disciplina = request.form['disciplina']
+        ano = request.form['ano']
+        semestre = request.form['semestre']
+        professor = request.form['professor']
+        departamento = request.form['departamento']
+        print(arquivo, disciplina, ano, semestre, professor, departamento)
+        return render_template('pesquisa_result.html')
+
+@app.route('/pesquisa/result')
+@login_required
+def pesquisa_result():
+
+    return render_template('pesquisa_result.html')
 
 @app.route('/contribuir')
 @login_required

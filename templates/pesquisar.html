@@ -26,5 +26,71 @@
 {% endblock %}
 
 {% block content %}
-    pesquisar
+<!DOCTYPE html>
+<html lang="en">
+
+<div class="col-md-6">
+  <div class="card ">
+    <div class="card-header card-header-rose card-header-icon">
+      <div class="card-icon">
+        <i class="material-icons">contacts</i>
+      </div>
+      <h4 class="card-title">Filtros de Pesquisa</h4>
+    </div>
+    <div class="card-body ">
+      <form class="form-horizontal", action="{{ url_for('pesquisar') }}" method="post">
+        <br>
+        <label> Selecione o Tipo de Arquivo</label> <br>
+        <select name="tipoArquivo" class="btn btn-primary btn-round
+            btn-block" id="tipoArquivo">
+            <option value="prova">Prova</option>
+            <option value="listaExercicios">Lista de Exercícios</option>
+            <option value="apostila">Apostila</option>
+            <option value="livro">Livro</option>
+            <option value="trabalho">Trabalho</option>
+            <option value="slide">Slide</option>
+            <option value="outro">Outro</option>
+        </select>
+        <br>
+        <div class="form-group bmd-form-group">
+                   <input placeholder="Disciplina" type="text"
+                       class="form-control" name="disciplina"
+                       id="disciplina">
+        </div>
+        <br>
+        <div class="form-group bmd-form-group">
+                   <input placeholder="Ano" type="text"
+                       class="form-control" name="ano"
+                       id="ano">
+        </div>
+        <br>
+        <div class="form-group bmd-form-group">
+                   <input placeholder="Semestre" type="text"
+                       class="form-control" name="semestre"
+                       id="semestre">
+        </div>
+        <br>
+        <div class="form-group bmd-form-group">
+                   <input placeholder="Professor" type="text"
+                       class="form-control" name="professor"
+                       id="professor">
+        </div>
+        <br>
+        <div class="form-group bmd-form-group">
+                   <input placeholder="Departamento" type="text"
+                       class="form-control" name="departamento"
+                       id="departamento">
+        </div>
+        <button type="submit" class="btn btn-fill btn-rose" >Pesquisar</button>
+      </form>
+    </div>
+    <div class="card-footer ">
+      <div class="row">
+        <div class="col-md-9">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

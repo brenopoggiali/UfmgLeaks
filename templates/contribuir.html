@@ -1,99 +1,130 @@
-{% extends "layout.html" %}
-
-{% block page_title %}
-Contribuir
-{% endblock %}
-
-{% block sidebar %}
+{% extends "layout.html" %} {% block page_title %} Contribuir {% endblock %} {%
+block sidebar %}
 <li class="nav-item">
-    <a class="nav-link" href="/dashboard">
-        <i class="material-icons">dashboard</i>
-        <p>Dashboard</p>
-    </a>
+  <a class="nav-link" href="/dashboard">
+    <i class="material-icons">dashboard</i>
+    <p>Dashboard</p>
+  </a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="/pesquisar">
-        <i class="material-icons">search</i>
-        <p>Pesquisar</p>
-    </a>
+  <a class="nav-link" href="/pesquisar">
+    <i class="material-icons">search</i>
+    <p>Pesquisar</p>
+  </a>
 </li>
 <li class="nav-item active">
-    <a class="nav-link" href="/contribuir">
-        <i class="material-icons">cloud_upload</i>
-        <p>Contribuir</p>
-    </a>
+  <a class="nav-link" href="/contribuir">
+    <i class="material-icons">cloud_upload</i>
+    <p>Contribuir</p>
+  </a>
 </li>
-{% endblock %}
-
-{% block content %}
-<div class="col-md-8 offset-2">
-    <div class="card">
-        <div class="card-header card-header-rose card-header-icon">
-            <div class="card-icon">
-                <i class="material-icons">form</i>
-            </div>
-            <h4 class="card-title">Formulário de Contribuição</h4>
-        </div>
-        <div class="card-body">
-            <form method="post" action="{{ url_for('contribuir.html') }}">
-                <div class="form-group bmd-form-group">
-                    <input placeholder="Disciplina" type="text"
-                        class="form-control" email
-                        id="disciplina">
-                </div>
-                <div class="form-group bmd-form-group">
-                    <input type="text" class="form-control"
-                        placeholder="Nome do professor" id="professorName">
-                </div>
-                <div class="form-group bmd-form-group">
-                    <input type="text" class="form-control"
-                        placeholder="Curso" id="curso">
-                </div>
-                <div class="form-group bmd-form-group">
-                    <input type="text" class="form-control"
-                        placeholder="Dê um nome ao seu arquivo" id="fileName">
-                </div>
-                <div class="form-group bmd-form-group">
-                    <input type="text" class="form-control"
-                        placeholder="Link do arquivo (Drive, Dropbox...)"
-                        id="fileLink">
-                </div>
-
-                <br>
-                <label> Selecione o Tipo de Arquivo</label> <br>
-
-                <select name="tipoArquivo" class="btn btn-primary btn-round
-                    btn-block">
-                    <option value="prova">Prova</option>
-                    <option value="listaExercicios">Lista de Exercícios</option>
-                    <option value="apostila">Apostila</option>
-                    <option value="livro">Livro</option>
-                    <option value="trabalho">Trabalho</option>
-                    <option value="slide">Slide</option>
-                    <option value="outro">Outro</option>
-                </select>
-
-                <br>
-                <div class="form-group bmd-form-group">
-                    <input type="text" class="form-control"
-                        placeholder="Ano" id="ano">
-                </div>
-
-                <br>
-                <label>Semestre</label>
-                <br>
-
-                <select name="Semestre" class="btn btn-primary btn-round
-                    btn-block">
-                    <option value="um">1</option>
-                    <option value="dois">2</option>
-                </select>
-
-            </form>
-        </div>
-        <div class="card-footer">
-            <button type="submit" class="btn btn-fill btn-rose">Submit</button>
-        </div>
+{% endblock %} {% block content %}
+<div class="col-md-8 offset-md-2">
+  <div class="card">
+    <div class="card-header card-header-rose card-header-icon">
+      <div class="card-icon">
+        <i class="material-icons">form</i>
+      </div>
+      <h4 class="card-title">Formulário de Contribuição</h4>
     </div>
+    <div class="card-body">
+      <form method="post" action="{{ url_for('contribuir') }}">
+        <label> Selecione a Disciplina</label> <br />
+        <select
+          name="disciplina"
+          class="btn btn-primary btn-round
+                    btn-block"
+        >
+          {% for coluna, content in disciplinas.iterrows() %}
+          <p>
+            <option value="{{ content.nome }}">{{ content.nome }}</option>
+          </p>
+          {% endfor %}
+        </select>
+
+        <div class="form-group bmd-form-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Nome do professor"
+            id="professorName"
+            name="professorName"
+          />
+        </div>
+        <div class="form-group bmd-form-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Curso"
+            id="curso"
+            name="curso"
+          />
+        </div>
+        <div class="form-group bmd-form-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Dê um nome ao seu arquivo"
+            id="fileName"
+            name="fileName"
+          />
+        </div>
+        <div class="form-group bmd-form-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Link do arquivo (Drive, Dropbox...)"
+            id="fileLink"
+            name="fileLink"
+          />
+        </div>
+
+        <br />
+        <label> Selecione o Tipo de Arquivo</label> <br />
+
+        <select
+          name="tipoArquivo"
+          class="btn btn-primary btn-round
+                    btn-block"
+        >
+          <option value="prova">Prova</option>
+          <option value="listaExercicios">Lista de Exercícios</option>
+          <option value="apostila">Apostila</option>
+          <option value="livro">Livro</option>
+          <option value="trabalho">Trabalho</option>
+          <option value="slide">Slide</option>
+          <option value="outro">Outro</option>
+        </select>
+
+        <br />
+        <div class="form-group bmd-form-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Ano"
+            id="ano"
+            name="ano"
+          />
+        </div>
+
+        <br />
+        <label>Semestre</label>
+        <br />
+
+        <select
+          name="semestre"
+          class="btn btn-primary btn-round
+                    btn-block"
+        >
+          <option value="um">1</option>
+          <option value="dois">2</option>
+        </select>
+
+        <div class="card-footer">
+          <button type="submit" class="btn btn-fill btn-rose">Enviar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 {% endblock %}

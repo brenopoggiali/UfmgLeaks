@@ -14,7 +14,6 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 ## DATABASE ##
-<<<<<<< HEAD
 import db
 from models import User
 
@@ -22,19 +21,6 @@ app.config['SQLITE3_DATABASE_URI']=os.path.join(app.instance_path, 'database.sql
 db.init_app(app)
 
 ## LOGIN ##
-=======
-app.config['SQLITE3_DATABASE_URI'] = os.path.join(
-    app.instance_path, 'database.sqlite')
-db.init_app(app)
-
-## LOGIN ##
-
-
-class User(UserMixin):
-    pass
-
-
->>>>>>> refactor: pegar tabela de disciplinas do banco de dados
 @login_manager.user_loader
 def user_loader(email):
     conn = sqlite3.connect('instance/database.sqlite')
@@ -48,35 +34,7 @@ def user_loader(email):
     user.user_id = email
     return user
 
-<<<<<<< HEAD
 ## ROUTES ##
-=======
-
-@login_manager.request_loader
-def request_loader(request):
-    conn = sqlite3.connect('instance/database.sqlite')
-    email = request.form.get('email')
-    users = pd.read_sql(
-        f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
-    if not users.size:
-        return
-
-    user = User()
-    user.id = email
-
-    # DO NOT ever store passwords in plaintext and always compare password
-    # hashes using constant-time comparison!
-    pw_hash = pd.read_sql(
-        f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
-    if bcrypt.check_password_hash(pw_hash.iloc[0]['encrypted_password'], request.form['password']):
-        user.is_authenticated = bcrypt.generate_password_hash(
-            request.form['password']) == pw_hash.iloc[0]['encrypted_password']
-        return user
-    else:
-        return
-
-
->>>>>>> refactor: pegar tabela de disciplinas do banco de dados
 @app.route('/')
 def index():
     return redirect(url_for('login'))
@@ -151,7 +109,18 @@ def register(email_exists = False):
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+  conn = sqlite3.connect('instance/database.sqlite')
+  meus_arquivos = pd.read_sql(f"SELECT Arquivo.nome, Arquivo.tipo, Disciplina.nome, Arquivo.professor, ano, semestre \
+                                FROM Arquivo JOIN Users ON Arquivo.id_contribuinte = Users.id \
+                                JOIN Disciplina ON Arquivo.id_disciplina = Disciplina.id \
+                                WHERE Users.email='{current_user.id}' ORDER BY Arquivo.id DESC LIMIT 100", conn)
+  arquivos_gerais = pd.read_sql(f"SELECT Arquivo.nome, Users.nome, Arquivo.tipo, Disciplina.nome, Arquivo.professor, \
+                                ano, semestre \
+                                FROM Arquivo JOIN Users ON Arquivo.id_contribuinte = Users.id \
+                                JOIN Disciplina ON Arquivo.id_disciplina = Disciplina.id \
+                                ORDER BY Arquivo.id DESC LIMIT 10", conn)
+  return render_template('dashboard.html', meus_arquivos = meus_arquivos, arquivos_gerais = arquivos_gerais)
+
 
 
 @app.route('/pesquisar')
@@ -180,12 +149,12 @@ def contribuir():
 
         conn = sqlite3.connect('instance/database.sqlite')
         c = conn.cursor()
-        
+
         user_id = current_user.user_id
         disciplina_id = pd.read_sql(f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
 
         c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileLink}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
-        
+
         conn.commit()
 
         disciplinas = pd.read_sql(

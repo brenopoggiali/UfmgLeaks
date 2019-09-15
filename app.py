@@ -96,22 +96,79 @@ def dashboard():
 @login_required
 def pesquisar():
     if request.method == 'GET':
-        return render_template('pesquisar.html')
+        conn = sqlite3.connect('instance/database.sqlite')
+        disciplinas = pd.read_sql(
+            "SELECT nome FROM Disciplina ORDER BY nome", conn)
+        return render_template('pesquisar.html', disciplinas=disciplinas)
     else:
         arquivo = request.form['tipoArquivo']
+        if(arquivo == ''): arquivo=False
+
         disciplina = request.form['disciplina']
+        if(disciplina == ''): disciplina=False
+
         ano = request.form['ano']
+        if(ano == ''): ano=False
+
         semestre = request.form['semestre']
+        if(semestre == ''): semestre=False
+
         professor = request.form['professor']
+        if(professor == ''): professor=False
+
         departamento = request.form['departamento']
+        if(departamento == ''): departamento=False
+
         print(arquivo, disciplina, ano, semestre, professor, departamento)
-        return render_template('pesquisa_result.html')
+
+
+        return redirect(url_for('pesquisa_result', arquivo=arquivo, disciplina=disciplina, ano=ano,
+                                semestre=semestre, professor=professor, departamento=departamento))
 
 @app.route('/pesquisa/result')
 @login_required
-def pesquisa_result():
+def pesquisa_result(arquivo='False', disciplina='False', ano='False',
+                        semestre='False', professor='False', departamento='False'):
 
-    return render_template('pesquisa_result.html')
+    conn = sqlite3.connect('instance/database.sqlite')
+    query = f"SELECT Arquivo.tipo, Disciplina.nome as disciplina, \
+    Arquivo.nome as arquivo, Arquivo.semestre, Arquivo.professor, \
+    Departamento.nome as departamento \
+    FROM Arquivo JOIN Disciplina \
+    ON Arquivo.id_disciplina=Disciplina.id JOIN Departamento \
+    ON Disciplina.id_departamento=Departamento.id"
+
+    # Grab passed arguments
+    if 'arquivo' in request.args: arquivo = request.args['arquivo']
+    if 'disciplina' in request.args: disciplina = request.args['disciplina']
+    if 'ano' in request.args: ano = request.args['ano']
+    if 'semestre' in request.args: semestre = request.args['semestre']
+    if 'professor' in request.args: professor = request.args['professor']
+    if 'departamento' in request.args: departamento = request.args['departamento']
+
+    print('\n', arquivo, disciplina, ano, semestre, professor, departamento, '\n')
+
+    if(arquivo != 'False'):
+        query = query+f" WHERE Arquivo.tipo='{arquivo}'"
+
+    if(disciplina != 'False'):
+        query = query+f" AND Disciplina.nome='{disciplina}'"
+
+    if(ano != 'False'):
+        query = query+f" AND Arquivo.nome={ano}"
+
+    if(semestre != 'False'):
+        query = query+f" AND Arquivo.semestre={semestre}"
+
+    if(professor != 'False'):
+        query = query+f" AND Arquivo.professor='{professor}'"
+
+    if(departamento != 'False'):
+        query = query+f" AND Departamento.nome='{departamento}'"
+
+    print(query)
+    result = pd.read_sql(query, conn)
+    return render_template('pesquisa_result.html', result=result)
 
 @app.route('/contribuir')
 @login_required

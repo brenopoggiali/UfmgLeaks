@@ -1,3 +1,4 @@
 Flask==1.0.2
 flask-login==0.4.1
 flask_bcrypt
+pandas==0.25.1

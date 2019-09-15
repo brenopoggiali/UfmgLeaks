@@ -8,7 +8,7 @@ CREATE TABLE Users (
 
 CREATE TABLE Arquivo (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-	id_contribuinte INTEGER NOT NULL,
+    id_contribuinte INTEGER NOT NULL,
     nome VARCHAR(255) NOT NULL,
     link VARCHAR(255) NOT NULL UNIQUE,
     id_disciplina INTEGER NOT NULL,

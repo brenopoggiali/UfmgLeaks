@@ -42,6 +42,7 @@ def user_loader(email):
 
     user = User()
     user.id = email
+    user.user_id = email
     return user
 >>>>>>> refactor: pegar tabela de disciplinas do banco de dados
 
@@ -70,7 +71,6 @@ def login(alert_auth = False, created_user = False):
         return redirect(url_for('dashboard'))
     else:
         return render_template('login.html', alert_auth=True, wrong_data=True)
-
 
 @app.route('/logout')
 def logout():
@@ -230,18 +230,23 @@ def contribuir():
         curso = request.form["curso"]
         fileName = request.form["fileName"]
         fileLink = request.form["fileLink"]
+        tipoArquivo = request.form["tipoArquivo"]
         ano = request.form["ano"]
         semestre = request.form["semestre"]
 
-        print(disciplina)
-        print(professorName)
-        print(curso)
-        print(fileName)
-        print(fileLink)
-        print(ano)
-        print(semestre)
+        conn = sqlite3.connect('instance/database.sqlite')
+        c = conn.cursor()
 
-        return render_template('contribuir.html')
+        user_id = current_user.user_id
+        disciplina_id = pd.read_sql(f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
+
+        c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileLink}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
+
+        conn.commit()
+
+        disciplinas = pd.read_sql(
+            "SELECT nome FROM Disciplina ORDER BY nome", conn)
+        return render_template('contribuir.html', disciplinas=disciplinas)
 
 
 @app.route('/termos_condicoes')

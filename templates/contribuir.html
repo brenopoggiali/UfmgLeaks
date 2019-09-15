@@ -36,9 +36,7 @@ block sidebar %}
                     btn-block"
         >
           {% for coluna, content in disciplinas.iterrows() %}
-          <p>
-            <option value="{{ content.nome }}">{{ content.nome }}</option>
-          </p>
+          <option value="{{ content.nome }}">{{ content.nome }}</option>
           {% endfor %}
         </select>
 

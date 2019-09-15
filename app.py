@@ -45,6 +45,7 @@ def user_loader(email):
 
     user = User()
     user.id = email
+    user.user_id = email
     return user
 
 <<<<<<< HEAD
@@ -101,14 +102,17 @@ def login(alert_auth = False, created_user = False):
     else:
         conn = sqlite3.connect('instance/database.sqlite')
         email = request.form['email']
-        user = pd.read_sql(
-            f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
-        email_in_db = user.size
+        id = pd.read_sql(
+            f"SELECT id FROM Users WHERE Users.email='{email}'", conn)
+        email_in_db = id.size
         pw_hash = pd.read_sql(
             f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
         if email_in_db and bcrypt.check_password_hash(pw_hash.iloc[0]['encrypted_password'], request.form['password']):
             user = User()
             user.id = email
+            user.email = email
+            print("id:", id)
+            user.user_id = id.iloc[0]['id']
             login_user(user)
             return redirect(url_for('dashboard'))
         else:
@@ -170,18 +174,23 @@ def contribuir():
         curso = request.form["curso"]
         fileName = request.form["fileName"]
         fileLink = request.form["fileLink"]
+        tipoArquivo = request.form["tipoArquivo"]
         ano = request.form["ano"]
         semestre = request.form["semestre"]
 
-        print(disciplina)
-        print(professorName)
-        print(curso)
-        print(fileName)
-        print(fileLink)
-        print(ano)
-        print(semestre)
+        conn = sqlite3.connect('instance/database.sqlite')
+        c = conn.cursor()
+        
+        user_id = current_user.user_id
+        disciplina_id = pd.read_sql(f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
 
-        return render_template('contribuir.html')
+        c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileLink}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
+        
+        conn.commit()
+
+        disciplinas = pd.read_sql(
+            "SELECT nome FROM Disciplina ORDER BY nome", conn)
+        return render_template('contribuir.html', disciplinas=disciplinas)
 
 
 @app.route('/termos_condicoes')

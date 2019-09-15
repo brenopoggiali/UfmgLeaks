@@ -27,97 +27,95 @@
 
 {% block content %}
 <div class="row">   
-    <div class="col-lg-6 col-md-12">
+    <div class="col-lg-12 col-md-12">
         <div class="card">
-        <div class="card-header card-header-text card-header-green">
-            <div class="card-text">
-            <h4 class="card-title">Employees Stats</h4>
-            <p class="card-category">New employees on 15th September, 2016</p>
-            </div>
-        </div>
-        <div class="card-body table-responsive">
-            <table class="table table-hover">
-            <thead class="text-green">
-                <th>ID</th>
-                <th>Name</th>
-                <th>Salary</th>
-                <th>Country</th>
-            </thead>
-            <tbody>
-                <tr>
-                <td>1</td>
-                <td>Dakota Rice</td>
-                <td>$36,738</td>
-                <td>Niger</td>
-                </tr>
-                <tr>
-                <td>2</td>
-                <td>Minerva Hooper</td>
-                <td>$23,789</td>
-                <td>Curaçao</td>
-                </tr>
-                <tr>
-                <td>3</td>
-                <td>Sage Rodriguez</td>
-                <td>$56,142</td>
-                <td>Netherlands</td>
-                </tr>
-                <tr>
-                <td>4</td>
-                <td>Philip Chaney</td>
-                <td>$38,735</td>
-                <td>Korea, South</td>
-                </tr>
-            </tbody>
-            </table>
-        </div>
-        </div>
-    </div>
-    <div class="col-lg-6 col-md-12">
-        <div class="card">
-            <div class="card-header card-header-text card-header-azure">
+            <div class="card-header card-header-text card-header-info">
                 <div class="card-text">
-                    <h4 class="card-title">Employees Stats</h4>
-                    <p class="card-category">New employees on 15th September, 2016</p>
+                    <h4 class="card-title">Últimos arquivos enviados</h4>
+                    <p class="card-category">Arquivos enviados por todos os usuários</p>
                 </div>
                 </div>
                 <div class="card-body table-responsive">
                 <table class="table table-hover">
-                    <thead class="text-azure">
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Salary</th>
-                    <th>Country</th>
+                    <thead class="text-info">
+                        <th>Nome</th>
+                        <th>Contribuinte</th>
+                        <th>Tipo</th>
+                        <th>Disciplina</th>
+                        <th>Professor</th>
+                        <th class="text-center">Ano</th>
+                        <th class="text-center">Semestre</th>
+                        <th class="text-center">Download</th>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Dakota Rice</td>
-                        <td>$36,738</td>
-                        <td>Niger</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Minerva Hooper</td>
-                        <td>$23,789</td>
-                        <td>Curaçao</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Sage Rodriguez</td>
-                        <td>$56,142</td>
-                        <td>Netherlands</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Philip Chaney</td>
-                        <td>$38,735</td>
-                        <td>Korea, South</td>
-                    </tr>
+                        {% for coluna, content in arquivos_gerais.iterrows() %}
+                            <tr>
+                            <td>{{ content[0] }}</td>
+                            <td>{{ content[1] }}</td>
+                            <td>{{ content[2] }}</td>
+                            <td>{{ content[3] }}</td>
+                            <td>{{ content[4] }}</td>
+                            <td class="text-center">{{ content[5] }}</td>
+                            <td class="text-center">{{ content[6] }}</td>
+                            <td class="text-center">
+                                    <a href="#" rel="tooltip" title="Baixar arquivo" >
+                                        <i class="material-icons" style="font-size: 2rem; color: #00bcd4">cloud_download</i>
+                                    </a>
+                            </td>
+                            </tr>
+                        {% endfor %}
+
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+    <div class="col-lg-12 col-md-12">
+            <div class="card">
+            <div class="card-header card-header-text card-header-success">
+                <div class="card-text">
+                <h4 class="card-title">Meus arquivos enviados</h4>
+                <p class="card-category">Últimos arquivos enviados por mim</p>
+                </div>
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table table-hover">
+                <thead class="text-success">
+                    <th>Nome do Arquivo</th>
+                    <th>Tipo</th>
+                    <th>Disciplina</th>
+                    <th>Professor</th>
+                    <th class="text-center">Ano</th>
+                    <th class="text-center">Semestre</th>
+                    <th class="text-center">Download</th>
+                    <th class="text-center">Excluir</th>
+                </thead>
+                <tbody>
+                    {% for coluna, content in meus_arquivos.iterrows() %}
+                        <tr>
+                        <td>{{ content[0] }}</td>
+                        <td>{{ content[1] }}</td>
+                        <td>{{ content[2] }}</td>
+                        <td>{{ content[3] }}</td>
+                        <td class="text-center">{{ content[4] }}</td>
+                        <td class="text-center">{{ content[5] }}</td>
+                        <td class="text-center">
+                            <a href="#" rel="tooltip" title="Baixar arquivo" >
+                                <i class="material-icons" style="font-size: 2rem; color: #00bcd4">cloud_download</i>
+                            </a>
+                        </td>
+                        <td class="text-center">
+                            <a href="#" rel="tooltip" title="Excluir arquivo" onclick="demo.showSwal('warning-message-and-cancel')">
+                                <i class="material-icons" style="font-size: 1.5rem; color: #f44336">close</i>
+                            </a>
+                        </td>
+                        </tr>
+                    {% endfor %}
+    
+                </tbody>
+                </table>
+            </div>
+            </div>
+        </div>
 </div>
 {% endblock %}

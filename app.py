@@ -90,7 +90,19 @@ def register():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-  return render_template('dashboard.html')
+  conn = sqlite3.connect('instance/database.sqlite')
+  meus_arquivos = pd.read_sql(f"SELECT Arquivo.nome, Arquivo.tipo, Disciplina.nome, Arquivo.professor, ano, semestre \
+                                FROM Arquivo JOIN Users ON Arquivo.id_contribuinte = Users.id \
+                                JOIN Disciplina ON Arquivo.id_disciplina = Disciplina.id \
+                                WHERE Users.email='{current_user.id}' ORDER BY Arquivo.id DESC LIMIT 100", conn)
+  arquivos_gerais = pd.read_sql(f"SELECT Arquivo.nome, Users.nome, Arquivo.tipo, Disciplina.nome, Arquivo.professor, \
+                                ano, semestre \
+                                FROM Arquivo JOIN Users ON Arquivo.id_contribuinte = Users.id \
+                                JOIN Disciplina ON Arquivo.id_disciplina = Disciplina.id \
+                                ORDER BY Arquivo.id DESC LIMIT 10", conn)
+  return render_template('dashboard.html', meus_arquivos = meus_arquivos, arquivos_gerais = arquivos_gerais)
+
+
 
 @app.route('/pesquisar')
 @login_required

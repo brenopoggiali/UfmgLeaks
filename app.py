@@ -15,14 +15,12 @@ login_manager.init_app(app)
 
 ## DATABASE ##
 import db
+from models import User
+
 app.config['SQLITE3_DATABASE_URI']=os.path.join(app.instance_path, 'database.sqlite')
 db.init_app(app)
 
 ## LOGIN ##
-class User(UserMixin):
-  pass
-
-
 @login_manager.user_loader
 def user_loader(email):
   conn = sqlite3.connect('instance/database.sqlite')
@@ -34,27 +32,7 @@ def user_loader(email):
   user.id = email
   return user
 
-
-@login_manager.request_loader
-def request_loader(request):
-  conn = sqlite3.connect('instance/database.sqlite')
-  email = request.form.get('email')
-  users = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
-  if not users.size:
-    return
-
-  user = User()
-  user.id = email
-
-  # DO NOT ever store passwords in plaintext and always compare password
-  # hashes using constant-time comparison!
-  pw_hash = pd.read_sql(f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
-  if bcrypt.check_password_hash(pw_hash.iloc[0]['encrypted_password'], request.form['password']):
-    user.is_authenticated = bcrypt.generate_password_hash(request.form['password']) == pw_hash.iloc[0]['encrypted_password']
-    return user
-  else:
-    return
-
+## ROUTES ##
 @app.route('/')
 def index():
   return redirect(url_for('login'))
@@ -86,9 +64,10 @@ def logout():
   return redirect(url_for('login'))
 
 @app.route('/register', methods=['GET', 'POST'])
-def register():
+def register(email_exists = False):
   if request.method == 'GET':
-    return render_template('register.html')
+    if 'email_exists' in request.args: email_exists = request.args['email_exists']
+    return render_template('register.html', email_exists=email_exists)
   else:
     conn = sqlite3.connect('instance/database.sqlite')
     c = conn.cursor()
@@ -97,14 +76,14 @@ def register():
     user = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
     email_in_db = user.size
     if email_in_db:
-      return render_template('register.html', email_exists=True)
+      return redirect(url_for('register', email_exists=True))
     else:
       nome_pessoa = request.form['nome_pessoa']
       pw_hash = bcrypt.generate_password_hash(request.form['password'])
       pw_hash = str(pw_hash)[2:len(pw_hash)+2]
       c.execute(f"INSERT INTO Users ('nome', 'email', 'encrypted_password') VALUES ('{nome_pessoa}', '{email}', '{pw_hash}')")
       conn.commit()
-      return render_template('login.html', created_user=True)
+      return redirect(url_for('login', created_user=True))
 
 
 @app.route('/dashboard')

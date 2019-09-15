@@ -186,6 +186,25 @@
       </footer>
     </div>
   </div>
+  {% if email_exists %}
+    <script>
+      document.addEventListener("DOMContentLoaded", function(event) {
+        type = 'danger';
+
+        $.notify({
+          icon: "add_alert",
+            message: "Ops.. esse email já está cadastrado em nossa plataforma!"
+        }, {
+          type: type,
+          timer: 3000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          }
+        });
+      });
+    </script>
+  {% endif %}
   <!--   Core JS Files   -->
   <script src="../static/js/core/jquery.min.js"></script>
   <script src="../static/js/core/popper.min.js"></script>

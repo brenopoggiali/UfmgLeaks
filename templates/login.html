@@ -70,7 +70,7 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-4 col-md-6 col-sm-8 ml-auto mr-auto">
-            <form class="form" method="" action="">
+            <form class="form" method="POST" action="{{ url_for('login') }}">
               <div class="card card-login card-hidden">
                 <div class="card-header card-header-rose text-center">
                   <h4 class="card-title">Login</h4>
@@ -95,7 +95,7 @@
                           <i class="material-icons">email</i>
                         </span>
                       </div>
-                      <input type="email" class="form-control" placeholder="Email">
+                      <input name="email" type="email" class="form-control" placeholder="Email">
                     </div>
                   </span>
                   <span class="bmd-form-group">
@@ -105,18 +105,41 @@
                           <i class="material-icons">lock_outline</i>
                         </span>
                       </div>
-                      <input type="password" class="form-control" placeholder="Senha">
+                      <input name="password" type="password" class="form-control" placeholder="Senha">
                     </div>
                   </span>
                 </div>
                 <div class="card-footer justify-content-center">
-                  <a href="#pablo" class="btn btn-rose btn-link btn-lg">Entrar</a>
+                  <input type="submit" name="submit" class="btn btn-rose btn-link btn-lg" value="Entrar">
                 </div>
               </div>
             </form>
           </div>
         </div>
       </div>
+      {% if alert_auth %}
+        <script>
+          document.addEventListener("DOMContentLoaded", function(event) {
+            type = 'warning';
+
+            $.notify({
+              icon: "add_alert",
+              {% if wrong_data %}
+                message: "Ops.. seu email ou senha estão incorretos."
+              {% else %}
+                message: "Ops.. você precisa estar logado para ter acesso a essa tela."
+              {% endif %}
+            }, {
+              type: type,
+              timer: 3000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              }
+            });
+          });
+        </script>
+      {% endif %}
       <footer class="footer">
         <div class="container">
           <div class="copyright float-right">

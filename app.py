@@ -59,10 +59,11 @@ def index():
   return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
-def login(alert_auth = False):
+def login(alert_auth = False, created_user = False):
   if request.method == 'GET':
     if 'alert_auth' in request.args: alert_auth = request.args['alert_auth']
-    return render_template('login.html', alert_auth=alert_auth, wrong_data=False)
+    if 'created_user' in request.args: created_user = request.args['created_user']
+    return render_template('login.html', alert_auth=alert_auth, created_user=created_user, wrong_data=False)
   else:
     conn = sqlite3.connect('instance/database.sqlite')
     email = request.form['email']
@@ -85,7 +86,25 @@ def logout():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-  return render_template('register.html')
+  if request.method == 'GET':
+    return render_template('register.html')
+  else:
+    conn = sqlite3.connect('instance/database.sqlite')
+    c = conn.cursor()
+
+    email = request.form['email']
+    user = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
+    email_in_db = user.size
+    if email_in_db:
+      return render_template('register.html', email_exists=True)
+    else:
+      nome_pessoa = request.form['nome_pessoa']
+      pw_hash = bcrypt.generate_password_hash(request.form['password'])
+      pw_hash = str(pw_hash)[2:len(pw_hash)+2]
+      c.execute(f"INSERT INTO Users ('nome', 'email', 'encrypted_password') VALUES ('{nome_pessoa}', '{email}', '{pw_hash}')")
+      conn.commit()
+      return render_template('login.html', created_user=True)
+
 
 @app.route('/dashboard')
 @login_required

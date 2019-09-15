@@ -13,6 +13,8 @@ CREATE TABLE Arquivo (
     link VARCHAR(255) NOT NULL UNIQUE,
     id_disciplina INTEGER NOT NULL,
     tipo VARCHAR(255) NOT NULL,
+    ano INTEGER NOT NULL,
+    semestre INTEGER NOT NULL,
     professor VARCHAR(255),
     FOREIGN KEY (id_contribuinte) REFERENCES Users,
     FOREIGN KEY (id_disciplina) REFERENCES Disciplina
@@ -134,7 +136,7 @@ INSERT INTO Curso_Disciplina("id","id_curso", "id_disciplina") VALUES
 (34,1,34),
 (35,1,35);
 
-INSERT INTO Arquivo ("id_contribuinte", "nome", "link", "id_disciplina", "tipo", "professor") VALUES
+INSERT INTO Arquivo ("id_contribuinte", "nome", "link", "id_disciplina", "tipo", "ano", "semestre", "professor") VALUES
 
-(1, "Prova 1 - teste", "link aqui", 4, "Prova", "Loureiro"),
-(1, "TP Final", "link aqui2", 4, "Trabalho", "Loureiro");
+(1, "Prova 1 - teste", "link aqui", 4, "Prova", 2019, 1, "Loureiro"),
+(1, "TP Final", "link aqui2", 4, "Trabalho",2019, 1, "Loureiro");

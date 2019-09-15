@@ -1,9 +1,10 @@
+import db
 import os
 import sqlite3
 import pandas as pd
 from flask import Flask, escape, request, render_template, redirect, url_for, send_file
 from flask_login import (LoginManager, login_user, logout_user, login_required,
-            login_required, current_user, UserMixin)
+                         login_required, current_user, UserMixin)
 from flask_bcrypt import Bcrypt
 from io import BytesIO
 
@@ -23,6 +24,7 @@ db.init_app(app)
 ## LOGIN ##
 @login_manager.user_loader
 def user_loader(email):
+<<<<<<< HEAD
   conn = sqlite3.connect('instance/database.sqlite')
   users = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
   if not users.size:
@@ -31,11 +33,23 @@ def user_loader(email):
   user = User()
   user.id = email
   return user
+=======
+    conn = sqlite3.connect('instance/database.sqlite')
+    users = pd.read_sql(
+        f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
+    if not users.size:
+        return
+
+    user = User()
+    user.id = email
+    return user
+>>>>>>> refactor: pegar tabela de disciplinas do banco de dados
 
 ## ROUTES ##
 @app.route('/')
 def index():
-  return redirect(url_for('login'))
+    return redirect(url_for('login'))
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login(alert_auth = False, created_user = False):
@@ -50,18 +64,19 @@ def login(alert_auth = False, created_user = False):
     email_in_db = user.size
     pw_hash = pd.read_sql(f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
     if email_in_db and bcrypt.check_password_hash(pw_hash.iloc[0]['encrypted_password'], request.form['password']):
-      user = User()
-      user.id = email
-      login_user(user)
-      return redirect(url_for('dashboard'))
+        user = User()
+        user.id = email
+        login_user(user)
+        return redirect(url_for('dashboard'))
     else:
-      return render_template('login.html', alert_auth=True, wrong_data=True)
+        return render_template('login.html', alert_auth=True, wrong_data=True)
 
 
 @app.route('/logout')
 def logout():
-  logout_user()
-  return redirect(url_for('login'))
+    logout_user()
+    return redirect(url_for('login'))
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register(email_exists = False):
@@ -76,19 +91,20 @@ def register(email_exists = False):
     user = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
     email_in_db = user.size
     if email_in_db:
-      return redirect(url_for('register', email_exists=True))
+        return redirect(url_for('register', email_exists=True))
     else:
-      nome_pessoa = request.form['nome_pessoa']
-      pw_hash = bcrypt.generate_password_hash(request.form['password'])
-      pw_hash = str(pw_hash)[2:len(pw_hash)+2]
-      c.execute(f"INSERT INTO Users ('nome', 'email', 'encrypted_password') VALUES ('{nome_pessoa}', '{email}', '{pw_hash}')")
-      conn.commit()
-      return redirect(url_for('login', created_user=True))
+        nome_pessoa = request.form['nome_pessoa']
+        pw_hash = bcrypt.generate_password_hash(request.form['password'])
+        pw_hash = str(pw_hash)[2:len(pw_hash)+2]
+        c.execute(f"INSERT INTO Users ('nome', 'email', 'encrypted_password') VALUES ('{nome_pessoa}', '{email}', '{pw_hash}')")
+        conn.commit()
+        return redirect(url_for('login', created_user=True))
 
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
+<<<<<<< HEAD
   conn = sqlite3.connect('instance/database.sqlite')
   meus_arquivos = pd.read_sql(f"SELECT Arquivo.nome, Arquivo.tipo, Disciplina.nome, Arquivo.professor, ano, semestre \
                                 FROM Arquivo JOIN Users ON Arquivo.id_contribuinte = Users.id \
@@ -122,6 +138,12 @@ def dashboard():
 #       return send_file(file_download)
 
 @app.route('/pesquisar')
+=======
+    return render_template('dashboard.html')
+
+
+@app.route('/pesquisar', methods=['GET', 'POST'])
+>>>>>>> refactor: pegar tabela de disciplinas do banco de dados
 @login_required
 def pesquisar():
     if request.method == 'GET':
@@ -193,10 +215,34 @@ def pesquisa_result(arquivo='False', disciplina='False', ano='False',
     result = pd.read_sql(query, conn)
     return render_template('pesquisa_result.html', result=result)
 
-@app.route('/contribuir')
+
+@app.route('/contribuir', methods=['GET', 'POST'])
 @login_required
 def contribuir():
-  return render_template('contribuir.html')
+    if request.method == 'GET':
+        conn = sqlite3.connect('instance/database.sqlite')
+        disciplinas = pd.read_sql(
+            "SELECT nome FROM Disciplina ORDER BY nome", conn)
+        return render_template('contribuir.html', disciplinas=disciplinas)
+    else:
+        disciplina = request.form["disciplina"]
+        professorName = request.form["professorName"]
+        curso = request.form["curso"]
+        fileName = request.form["fileName"]
+        fileLink = request.form["fileLink"]
+        ano = request.form["ano"]
+        semestre = request.form["semestre"]
+
+        print(disciplina)
+        print(professorName)
+        print(curso)
+        print(fileName)
+        print(fileLink)
+        print(ano)
+        print(semestre)
+
+        return render_template('contribuir.html')
+
 
 @app.route('/termos_condicoes')
 def termos_condicoes():
@@ -204,4 +250,4 @@ def termos_condicoes():
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
-  return redirect(url_for('login', alert_auth=True))
+    return redirect(url_for('login', alert_auth=True))

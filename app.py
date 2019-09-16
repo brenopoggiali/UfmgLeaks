@@ -204,6 +204,10 @@ def pesquisa_result(arquivo='False', disciplina='False', ano='False',
 def contribuir():
   return render_template('contribuir.html')
 
+@app.route('/termos_condicoes')
+def termos_condicoes():
+  return render_template('termos_condicoes.html')
+
 @login_manager.unauthorized_handler
 def unauthorized_handler():
   return redirect(url_for('login', alert_auth=True))

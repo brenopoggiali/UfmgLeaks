@@ -2,10 +2,11 @@ import db
 import os
 import sqlite3
 import pandas as pd
-from flask import Flask, escape, request, render_template, redirect, url_for
+from flask import Flask, escape, request, render_template, redirect, url_for, send_file
 from flask_login import (LoginManager, login_user, logout_user, login_required,
                          login_required, current_user, UserMixin)
 from flask_bcrypt import Bcrypt
+from io import BytesIO
 
 app = Flask(__name__)
 app.secret_key = 'super secret string'
@@ -121,7 +122,25 @@ def dashboard():
                                 ORDER BY Arquivo.id DESC LIMIT 10", conn)
   return render_template('dashboard.html', meus_arquivos = meus_arquivos, arquivos_gerais = arquivos_gerais)
 
-
+# @app.route('/download', methods = ["GET", "POST"])
+# @login_required
+# def download():
+#   if request.method == "POST":
+#
+#       conn = sqlite3.connect("instance/database.sqlite")
+#       cursor = conn.cursor()
+#       c = cursor.execute(""" SELECT Arquivo FROM Arquivo \
+#                              WHERE Arquivo.link = {<LINK>}""")
+#
+#       for x in c.fetchall():
+#         name_v=x[0]
+#         data_v=x[1]
+#         break
+#       conn.commit()
+#       cursor.close()
+#       conn.close()
+#
+#       return send_file(file_download)
 
 @app.route('/pesquisar')
 @login_required

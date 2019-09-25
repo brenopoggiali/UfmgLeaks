@@ -109,7 +109,6 @@ def register(email_exists = False):
       conn.commit()
       return redirect(url_for('login', created_user=True))
 
-
 @app.route('/dashboard')
 @login_required
 def dashboard():

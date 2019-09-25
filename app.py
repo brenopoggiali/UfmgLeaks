@@ -2,7 +2,14 @@ import db
 import os
 import sqlite3
 import pandas as pd
+<<<<<<< HEAD
 from flask import Flask, escape, request, render_template, redirect, url_for, send_file
+=======
+from flask import Flask, escape, request, render_template, redirect, url_for
+from flask_wtf.file import FileField
+from wtforms import SubmitField
+from flask_wtf import Form
+>>>>>>> add database function and import form functions.
 from flask_login import (LoginManager, login_user, logout_user, login_required,
                          login_required, current_user, UserMixin)
 from flask_bcrypt import Bcrypt
@@ -117,33 +124,7 @@ def dashboard():
                                 ORDER BY Arquivo.id DESC LIMIT 10", conn)
   return render_template('dashboard.html', meus_arquivos = meus_arquivos, arquivos_gerais = arquivos_gerais)
 
-# @app.route('/download', methods = ["GET", "POST"])
-# @login_required
-# def download():
-#   if request.method == "POST":
-#
-#       conn = sqlite3.connect("instance/database.sqlite")
-#       cursor = conn.cursor()
-#       c = cursor.execute(""" SELECT Arquivo FROM Arquivo \
-#                              WHERE Arquivo.link = {<LINK>}""")
-#
-#       for x in c.fetchall():
-#         name_v=x[0]
-#         data_v=x[1]
-#         break
-#       conn.commit()
-#       cursor.close()
-#       conn.close()
-#
-#       return send_file(file_download)
-
 @app.route('/pesquisar')
-=======
-    return render_template('dashboard.html')
-
-
-@app.route('/pesquisar', methods=['GET', 'POST'])
->>>>>>> refactor: pegar tabela de disciplinas do banco de dados
 @login_required
 def pesquisar():
     if request.method == 'GET':
@@ -217,7 +198,7 @@ def pesquisa_result(arquivo='False', disciplina='False', ano='False',
 
 
 @app.route('/contribuir', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def contribuir():
     if request.method == 'GET':
         conn = sqlite3.connect('instance/database.sqlite')
@@ -255,3 +236,17 @@ def termos_condicoes():
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     return redirect(url_for('login', alert_auth=True))
+
+
+def database(name, data, tipo, professor):
+    conn = sqlite3.connect('instance/database.sqlite')
+    c = conn.cursor()
+
+    user_id = current_user.user_id
+    disciplina_id = pd.read_sql(f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
+
+    c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileLink}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
+
+    conn.commit()
+    c.close()
+    conn.close()

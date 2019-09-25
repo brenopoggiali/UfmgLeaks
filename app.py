@@ -7,11 +7,26 @@ import os
 import sqlite3
 import datetime
 import pandas as pd
+<<<<<<< HEAD
 from flask import Flask, flash, escape, request, render_template, redirect, url_for
 from flask_wtf.file import FileField
 from wtforms import SubmitField
 from flask_wtf import Form
 from flask_login import LoginManager, login_user, logout_user, login_required, login_required, current_user, UserMixin
+=======
+<<<<<<< HEAD
+from flask import Flask, escape, request, render_template, redirect, url_for, send_file
+=======
+from flask import Flask, escape, request, render_template, redirect, url_for
+from flask_wtf.file import FileField
+from wtforms import SubmitField
+from flask_wtf import Form
+>>>>>>> add database function and import form functions.
+from flask_login import (LoginManager, login_user, logout_user, login_required,
+                         login_required, current_user, UserMixin)
+from flask_bcrypt import Bcrypt
+from io import BytesIO
+>>>>>>> add database function and import form functions.
 
 app = Flask(__name__)
 app.secret_key = 'super secret string'
@@ -115,8 +130,12 @@ def dashboard():
                                 ORDER BY Arquivo.id DESC LIMIT 10", conn)
     return render_template('dashboard.html', meus_arquivos=meus_arquivos, arquivos_gerais=arquivos_gerais)
 
+<<<<<<< HEAD
 
 @app.route('/pesquisar',  methods=['GET', 'POST'])
+=======
+@app.route('/pesquisar')
+>>>>>>> add database function and import form functions.
 @login_required
 def pesquisar():
     if request.method == 'GET':
@@ -206,7 +225,11 @@ app.config['UPLOAD_DEST'] = os.getcwd() + '/uploads'
 
 
 @app.route('/contribuir', methods=['GET', 'POST'])
+<<<<<<< HEAD
 # @login_required
+=======
+#@login_required
+>>>>>>> add database function and import form functions.
 def contribuir():
     conn = sqlite3.connect('instance/database.sqlite')
     c = conn.cursor()
@@ -260,3 +283,17 @@ def termos_condicoes():
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     return redirect(url_for('login', alert_auth=True))
+
+
+def database(name, data, tipo, professor):
+    conn = sqlite3.connect('instance/database.sqlite')
+    c = conn.cursor()
+
+    user_id = current_user.user_id
+    disciplina_id = pd.read_sql(f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
+
+    c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileLink}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
+
+    conn.commit()
+    c.close()
+    conn.close()

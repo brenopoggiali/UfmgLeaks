@@ -3,6 +3,9 @@ import os
 import sqlite3
 import pandas as pd
 from flask import Flask, escape, request, render_template, redirect, url_for
+from flask_wtf.file import FileField
+from wtforms import SubmitField
+from flask_wtf import Form
 from flask_login import (LoginManager, login_user, logout_user, login_required,
                          login_required, current_user, UserMixin)
 from flask_bcrypt import Bcrypt
@@ -118,7 +121,7 @@ def pesquisar():
 
 
 @app.route('/contribuir', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def contribuir():
     
     if request.method == 'GET':
@@ -137,21 +140,40 @@ def contribuir():
         ano = request.form["ano"]
         semestre = request.form["semestre"]
 
-        conn = sqlite3.connect('instance/database.sqlite')
-        c = conn.cursor()
-        
-        user_id = current_user.user_id
-        disciplina_id = pd.read_sql(f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
 
-        c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileLink}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
-        
-        conn.commit()
+
+        # conn = sqlite3.connect('instance/database.sqlite')
+        # c = conn.cursor()
+        #
+        # user_id = current_user.user_id
+        # disciplina_id = pd.read_sql(f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
+        #
+        # c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileLink}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
+        #
+        # conn.commit()
 
         disciplinas = pd.read_sql(
             "SELECT nome FROM Disciplina ORDER BY nome", conn)
         return render_template('contribuir.html', disciplinas=disciplinas)
 
+class UploadForm(Form):
+    file = FileField
+
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     return redirect(url_for('login', alert_auth=True))
+
+
+def database(name, data, tipo, professor):
+    conn = sqlite3.connect('instance/database.sqlite')
+    c = conn.cursor()
+
+    user_id = current_user.user_id
+    disciplina_id = pd.read_sql(f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
+
+    c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileLink}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
+
+    conn.commit()
+    c.close()
+    conn.close()

@@ -15,6 +15,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 ## DATABASE ##
+<<<<<<< HEAD
 import db
 from models import User
 
@@ -22,6 +23,19 @@ app.config['SQLITE3_DATABASE_URI']=os.path.join(app.instance_path, 'database.sql
 db.init_app(app)
 
 ## LOGIN ##
+=======
+app.config['SQLITE3_DATABASE_URI'] = os.path.join(
+    app.instance_path, 'database.sqlite')
+db.init_app(app)
+
+## LOGIN ##
+
+
+class User(UserMixin):
+    pass
+
+
+>>>>>>> refactor: pegar tabela de disciplinas do banco de dados
 @login_manager.user_loader
 def user_loader(email):
     conn = sqlite3.connect('instance/database.sqlite')
@@ -34,6 +48,34 @@ def user_loader(email):
     user.id = email
     user.user_id = email
     return user
+<<<<<<< HEAD
+=======
+
+
+@login_manager.request_loader
+def request_loader(request):
+    conn = sqlite3.connect('instance/database.sqlite')
+    email = request.form.get('email')
+    users = pd.read_sql(
+        f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
+    if not users.size:
+        return
+
+    user = User()
+    user.id = email
+
+    # DO NOT ever store passwords in plaintext and always compare password
+    # hashes using constant-time comparison!
+    pw_hash = pd.read_sql(
+        f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
+    if bcrypt.check_password_hash(pw_hash.iloc[0]['encrypted_password'], request.form['password']):
+        user.is_authenticated = bcrypt.generate_password_hash(
+            request.form['password']) == pw_hash.iloc[0]['encrypted_password']
+        return user
+    else:
+        return
+
+>>>>>>> refactor: pegar tabela de disciplinas do banco de dados
 
 ## ROUTES ##
 @app.route('/')
@@ -42,6 +84,7 @@ def index():
 
 
 @app.route('/login', methods=['GET', 'POST'])
+<<<<<<< HEAD
 def login(alert_auth = False, created_user = False):
   if request.method == 'GET':
     if 'alert_auth' in request.args: alert_auth = request.args['alert_auth']
@@ -58,6 +101,13 @@ def login(alert_auth = False, created_user = False):
       user.id = email
       login_user(user)
       return redirect(url_for('dashboard'))
+=======
+def login(alert_auth=False):
+    if request.method == 'GET':
+        if 'alert_auth' in request.args:
+            alert_auth = request.args['alert_auth']
+        return render_template('login.html', alert_auth=alert_auth, wrong_data=False)
+>>>>>>> refactor: pegar tabela de disciplinas do banco de dados
     else:
         conn = sqlite3.connect('instance/database.sqlite')
         email = request.form['email']
@@ -122,26 +172,6 @@ def dashboard():
                                 ORDER BY Arquivo.id DESC LIMIT 10", conn)
   return render_template('dashboard.html', meus_arquivos = meus_arquivos, arquivos_gerais = arquivos_gerais)
 
-# @app.route('/download', methods = ["GET", "POST"])
-# @login_required
-# def download():
-#   if request.method == "POST":
-#
-#       conn = sqlite3.connect("instance/database.sqlite")
-#       cursor = conn.cursor()
-#       c = cursor.execute(""" SELECT Arquivo FROM Arquivo \
-#                              WHERE Arquivo.link = {<LINK>}""")
-#
-#       for x in c.fetchall():
-#         name_v=x[0]
-#         data_v=x[1]
-#         break
-#       conn.commit()
-#       cursor.close()
-#       conn.close()
-#
-#       return send_file(file_download)
-
 @app.route('/pesquisar')
 @login_required
 def pesquisar():
@@ -168,12 +198,10 @@ def contribuir():
 
         conn = sqlite3.connect('instance/database.sqlite')
         c = conn.cursor()
-
         user_id = current_user.user_id
         disciplina_id = pd.read_sql(f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
 
         c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileLink}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
-
         conn.commit()
 
         disciplinas = pd.read_sql(

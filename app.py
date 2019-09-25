@@ -2,14 +2,10 @@ import db
 import os
 import sqlite3
 import pandas as pd
-<<<<<<< HEAD
-from flask import Flask, escape, request, render_template, redirect, url_for, send_file
-=======
 from flask import Flask, escape, request, render_template, redirect, url_for
 from flask_wtf.file import FileField
 from wtforms import SubmitField
 from flask_wtf import Form
->>>>>>> add database function and import form functions.
 from flask_login import (LoginManager, login_user, logout_user, login_required,
                          login_required, current_user, UserMixin)
 from flask_bcrypt import Bcrypt
@@ -31,17 +27,19 @@ db.init_app(app)
 ## LOGIN ##
 @login_manager.user_loader
 def user_loader(email):
-<<<<<<< HEAD
   conn = sqlite3.connect('instance/database.sqlite')
   users = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
   if not users.size:
     return
-  
   user = User()
   user.id = email
   return user
-=======
+
+
+@login_manager.request_loader
+def request_loader(request):
     conn = sqlite3.connect('instance/database.sqlite')
+    email = request.form.get('email')
     users = pd.read_sql(
         f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
     if not users.size:
@@ -49,9 +47,17 @@ def user_loader(email):
 
     user = User()
     user.id = email
-    user.user_id = email
-    return user
->>>>>>> refactor: pegar tabela de disciplinas do banco de dados
+
+    # DO NOT ever store passwords in plaintext and always compare password
+    # hashes using constant-time comparison!
+    pw_hash = pd.read_sql(
+        f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
+    if bcrypt.check_password_hash(pw_hash.iloc[0]['encrypted_password'], request.form['password']):
+        user.is_authenticated = bcrypt.generate_password_hash(
+            request.form['password']) == pw_hash.iloc[0]['encrypted_password']
+        return user
+    else:
+        return
 
 ## ROUTES ##
 @app.route('/')
@@ -107,11 +113,9 @@ def register(email_exists = False):
         conn.commit()
         return redirect(url_for('login', created_user=True))
 
-
 @app.route('/dashboard')
 @login_required
 def dashboard():
-<<<<<<< HEAD
   conn = sqlite3.connect('instance/database.sqlite')
   meus_arquivos = pd.read_sql(f"SELECT Arquivo.nome, Arquivo.tipo, Disciplina.nome, Arquivo.professor, ano, semestre \
                                 FROM Arquivo JOIN Users ON Arquivo.id_contribuinte = Users.id \
@@ -236,7 +240,6 @@ def termos_condicoes():
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     return redirect(url_for('login', alert_auth=True))
-
 
 def database(name, data, tipo, professor):
     conn = sqlite3.connect('instance/database.sqlite')

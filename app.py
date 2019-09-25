@@ -248,7 +248,6 @@ def contribuir():
             "SELECT nome FROM Disciplina ORDER BY nome", conn)
         return render_template('contribuir.html', disciplinas=disciplinas)
 
-
 @app.route('/termos_condicoes')
 def termos_condicoes():
   return render_template('termos_condicoes.html')

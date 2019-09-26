@@ -137,10 +137,12 @@ def contribuir():
         professorName = request.form["professorName"]
         curso = request.form["curso"]
         fileName = request.form["fileName"]
-        fileLink = request.form["fileLink"]
+        file = request.files["file"]
         tipoArquivo = request.form["tipoArquivo"]
         ano = request.form["ano"]
         semestre = request.form["semestre"]
+
+        fileData = file.read()
 
         conn = sqlite3.connect('instance/database.sqlite')
         c = conn.cursor()
@@ -148,7 +150,7 @@ def contribuir():
         user_id = current_user.user_id
         disciplina_id = pd.read_sql(f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
 
-        c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileLink}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
+        c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'fileData', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileData}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
 
         conn.commit()
 
@@ -162,7 +164,14 @@ def unauthorized_handler():
     return redirect(url_for('login', alert_auth=True))
 
 # class UploadForm(Form):
+#   disciplina = SelectField()
+#   professorName = textField()
+#   curso = SelectField()
+#   fileName = textField()
 #   file = FileField()
+#   tipoArquivo = SelectField()
+#   ano = textField()
+#   semestre = SelectField()
 #   submit = SubmitField("Enviar")
 
 # def add_database(fileName, file, tipoArquivo, professorName):

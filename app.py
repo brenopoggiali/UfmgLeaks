@@ -143,10 +143,12 @@ def contribuir():
         professorName = request.form["professorName"]
         curso = request.form["curso"]
         fileName = request.form["fileName"]
-        fileLink = request.form["fileLink"]
+        file = request.files["file"]
         tipoArquivo = request.form["tipoArquivo"]
         ano = request.form["ano"]
         semestre = request.form["semestre"]
+
+        fileData = file.read()
 
         conn = sqlite3.connect('instance/database.sqlite')
         c = conn.cursor()

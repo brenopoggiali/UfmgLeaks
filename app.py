@@ -55,6 +55,7 @@ def user_loader(email):
   user.id = email
   return user
 
+<<<<<<< HEAD
 
 @login_manager.request_loader
 def request_loader(request):
@@ -83,6 +84,8 @@ def request_loader(request):
         return
 >>>>>>> Cria add_database funcition. Import form functions
 
+=======
+>>>>>>> Update template. Change form. Start WTFforms.
 ## ROUTES ##
 @app.route('/')
 def index():
@@ -281,13 +284,25 @@ def contribuir():
         disciplina = request.form["disciplina"]
         professorName = request.form["professorName"]
         curso = request.form["curso"]
+<<<<<<< HEAD
+=======
+        fileName = request.form["fileName"]
+        file = request.files["file"]
+>>>>>>> Update template. Change form. Start WTFforms.
         tipoArquivo = request.form["tipoArquivo"]
         ano = request.form["ano"]
         semestre = request.form["semestre"]
 
+<<<<<<< HEAD
         user_id = current_user.get_id()
         disciplina_id = pd.read_sql(
             f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
+=======
+        fileData = file.read()
+
+        conn = sqlite3.connect('instance/database.sqlite')
+        c = conn.cursor()
+>>>>>>> Update template. Change form. Start WTFforms.
 
         if 'fileUpload' in request.files:
             file = request.files['fileUpload']
@@ -301,10 +316,14 @@ def contribuir():
         else:
             fileName = "no_file_selected"
 
+<<<<<<< HEAD
         print(fileName)
 
         c.execute(
             f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor', 'ano', 'semestre') VALUES ('{user_id}', '{fileName}', '{fileName}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}', '{ano}', '{semestre}' )")
+=======
+        c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'fileData', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileData}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
+>>>>>>> Update template. Change form. Start WTFforms.
 
         conn.commit()
 
@@ -318,16 +337,3 @@ def termos_condicoes():
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     return redirect(url_for('login', alert_auth=True))
-
-def database(name, data, tipo, professor):
-    conn = sqlite3.connect('instance/database.sqlite')
-    c = conn.cursor()
-
-    user_id = current_user.user_id
-    disciplina_id = pd.read_sql(f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
-
-    c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileLink}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
-
-    conn.commit()
-    c.close()
-    conn.close()

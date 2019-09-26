@@ -35,30 +35,6 @@ def user_loader(email):
   user.id = email
   return user
 
-
-@login_manager.request_loader
-def request_loader(request):
-    conn = sqlite3.connect('instance/database.sqlite')
-    email = request.form.get('email')
-    users = pd.read_sql(
-        f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
-    if not users.size:
-        return
-
-    user = User()
-    user.id = email
-
-    # DO NOT ever store passwords in plaintext and always compare password
-    # hashes using constant-time comparison!
-    pw_hash = pd.read_sql(
-        f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
-    if bcrypt.check_password_hash(pw_hash.iloc[0]['encrypted_password'], request.form['password']):
-        user.is_authenticated = bcrypt.generate_password_hash(
-            request.form['password']) == pw_hash.iloc[0]['encrypted_password']
-        return user
-    else:
-        return
-
 ## ROUTES ##
 @app.route('/')
 def index():
@@ -214,10 +190,12 @@ def contribuir():
         professorName = request.form["professorName"]
         curso = request.form["curso"]
         fileName = request.form["fileName"]
-        fileLink = request.form["fileLink"]
+        file = request.files["file"]
         tipoArquivo = request.form["tipoArquivo"]
         ano = request.form["ano"]
         semestre = request.form["semestre"]
+
+        fileData = file.read()
 
         conn = sqlite3.connect('instance/database.sqlite')
         c = conn.cursor()
@@ -225,7 +203,7 @@ def contribuir():
         user_id = current_user.user_id
         disciplina_id = pd.read_sql(f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
 
-        c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileLink}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
+        c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'fileData', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileData}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
 
         conn.commit()
 
@@ -240,16 +218,3 @@ def termos_condicoes():
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     return redirect(url_for('login', alert_auth=True))
-
-def database(name, data, tipo, professor):
-    conn = sqlite3.connect('instance/database.sqlite')
-    c = conn.cursor()
-
-    user_id = current_user.user_id
-    disciplina_id = pd.read_sql(f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
-
-    c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileLink}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
-
-    conn.commit()
-    c.close()
-    conn.close()

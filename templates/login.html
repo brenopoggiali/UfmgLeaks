@@ -140,6 +140,25 @@
           });
         </script>
       {% endif %}
+      {% if created_user %}
+        <script>
+          document.addEventListener("DOMContentLoaded", function(event) {
+            type = 'success';
+
+            $.notify({
+              icon: "add_alert",
+                message: "Parabéns!! Seu usuário foi criado com sucesso!"
+            }, {
+              type: type,
+              timer: 3000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              }
+            });
+          });
+        </script>
+      {% endif %}
       <footer class="footer">
         <div class="container">
           <div class="copyright float-right">

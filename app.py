@@ -255,7 +255,6 @@ def contribuir():
 class UploadForm(Form):
     file = FileField
 
-
 @app.route('/termos_condicoes')
 def termos_condicoes():
   return render_template('termos_condicoes.html')

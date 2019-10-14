@@ -4534,4 +4534,3 @@ INSERT INTO Curso_Disciplina("id_curso", "id_disciplina") VALUES
 ((select id from Curso where nome = 'Farmácia'), (select id from Disciplina where codigo = 'PFA617')),
 ((select id from Curso where nome = 'Farmácia'), (select id from Disciplina where codigo = 'QUI211'));
 
-

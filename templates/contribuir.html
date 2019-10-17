@@ -28,7 +28,7 @@ block sidebar %}
       <h4 class="card-title">Formulário de Contribuição</h4>
     </div>
     <div class="card-body">
-      <form method="post" action="{{ url_for('contribuir') }}">
+      <form method="post" action="{{ url_for('contribuir') }}" enctype="multipart/form-data">
         <label> Selecione a Disciplina</label> <br />
         <select
           name="disciplina"
@@ -73,9 +73,9 @@ block sidebar %}
             <span class="btn btn-primary btn-file"> Selecionar Arquivo
               <input
                       type=file
-                      name=file
+                      name=fileUpload
                       class="form-control"
-                      id="file"
+                      id="fileUpload"
               >
             </span>
 {#            <input type=submit class="btn btn-success" value=Upload>#}

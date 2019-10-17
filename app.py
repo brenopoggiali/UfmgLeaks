@@ -7,28 +7,11 @@ import os
 import sqlite3
 import datetime
 import pandas as pd
-<<<<<<< HEAD
-<<<<<<< HEAD
 from flask import Flask, flash, escape, request, render_template, redirect, url_for
 from flask_wtf.file import FileField
 from wtforms import SubmitField
 from flask_wtf import Form
 from flask_login import LoginManager, login_user, logout_user, login_required, login_required, current_user, UserMixin
-=======
-<<<<<<< HEAD
-from flask import Flask, escape, request, render_template, redirect, url_for, send_file
-=======
-=======
->>>>>>> Cria add_database funcition. Import form functions
-from flask import Flask, escape, request, render_template, redirect, url_for
-from flask_wtf.file import FileField
-from wtforms import SubmitField
-from flask_wtf import Form
-from flask_login import (LoginManager, login_user, logout_user, login_required,
-                         login_required, current_user, UserMixin)
-from flask_bcrypt import Bcrypt
-from io import BytesIO
->>>>>>> add database function and import form functions.
 
 app = Flask(__name__)
 app.secret_key = 'super secret string'
@@ -45,47 +28,15 @@ db.init_app(app)
 ## LOGIN ##
 @login_manager.user_loader
 def user_loader(email):
-<<<<<<< HEAD
-=======
-  conn = sqlite3.connect('instance/database.sqlite')
-  users = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
-  if not users.size:
-    return
-  user = User()
-  user.id = email
-  return user
-
-<<<<<<< HEAD
-
-@login_manager.request_loader
-def request_loader(request):
->>>>>>> Cria add_database funcition. Import form functions
     conn = sqlite3.connect('instance/database.sqlite')
-    email = request.form.get('email')
     users = pd.read_sql(
         f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
     if not users.size:
         return
     user = User()
     user.id = email
-<<<<<<< HEAD
     return user
-=======
 
-    # DO NOT ever store passwords in plaintext and always compare password
-    # hashes using constant-time comparison!
-    pw_hash = pd.read_sql(
-        f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
-    if bcrypt.check_password_hash(pw_hash.iloc[0]['encrypted_password'], request.form['password']):
-        user.is_authenticated = bcrypt.generate_password_hash(
-            request.form['password']) == pw_hash.iloc[0]['encrypted_password']
-        return user
-    else:
-        return
->>>>>>> Cria add_database funcition. Import form functions
-
-=======
->>>>>>> Update template. Change form. Start WTFforms.
 ## ROUTES ##
 @app.route('/')
 def index():
@@ -148,16 +99,12 @@ def register(email_exists=False):
             conn.commit()
             return redirect(url_for('login', created_user=True))
 
+
 @app.route('/dashboard')
 @login_required
 def dashboard():
-<<<<<<< HEAD
     conn = sqlite3.connect('instance/database.sqlite')
     meus_arquivos = pd.read_sql(f"SELECT Arquivo.nome, Arquivo.tipo, Disciplina.nome, Arquivo.professor, ano, semestre \
-=======
-  conn = sqlite3.connect('instance/database.sqlite')
-  meus_arquivos = pd.read_sql(f"SELECT Arquivo.nome, Arquivo.tipo, Disciplina.nome, Arquivo.professor, ano, semestre \
->>>>>>> Cria add_database funcition. Import form functions
                                 FROM Arquivo JOIN Users ON Arquivo.id_contribuinte = Users.id \
                                 JOIN Disciplina ON Arquivo.id_disciplina = Disciplina.id \
                                 WHERE Users.email='{current_user.id}' ORDER BY Arquivo.id DESC LIMIT 100", conn)
@@ -168,12 +115,8 @@ def dashboard():
                                 ORDER BY Arquivo.id DESC LIMIT 10", conn)
     return render_template('dashboard.html', meus_arquivos=meus_arquivos, arquivos_gerais=arquivos_gerais)
 
-<<<<<<< HEAD
 
 @app.route('/pesquisar',  methods=['GET', 'POST'])
-=======
-@app.route('/pesquisar')
->>>>>>> add database function and import form functions.
 @login_required
 def pesquisar():
     if request.method == 'GET':
@@ -263,11 +206,7 @@ app.config['UPLOAD_DEST'] = os.getcwd() + '/uploads'
 
 
 @app.route('/contribuir', methods=['GET', 'POST'])
-<<<<<<< HEAD
 # @login_required
-=======
-#@login_required
->>>>>>> add database function and import form functions.
 def contribuir():
     conn = sqlite3.connect('instance/database.sqlite')
     c = conn.cursor()
@@ -284,25 +223,13 @@ def contribuir():
         disciplina = request.form["disciplina"]
         professorName = request.form["professorName"]
         curso = request.form["curso"]
-<<<<<<< HEAD
-=======
-        fileName = request.form["fileName"]
-        file = request.files["file"]
->>>>>>> Update template. Change form. Start WTFforms.
         tipoArquivo = request.form["tipoArquivo"]
         ano = request.form["ano"]
         semestre = request.form["semestre"]
 
-<<<<<<< HEAD
         user_id = current_user.get_id()
         disciplina_id = pd.read_sql(
             f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
-=======
-        fileData = file.read()
-
-        conn = sqlite3.connect('instance/database.sqlite')
-        c = conn.cursor()
->>>>>>> Update template. Change form. Start WTFforms.
 
         if 'fileUpload' in request.files:
             file = request.files['fileUpload']
@@ -316,18 +243,15 @@ def contribuir():
         else:
             fileName = "no_file_selected"
 
-<<<<<<< HEAD
         print(fileName)
 
         c.execute(
             f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor', 'ano', 'semestre') VALUES ('{user_id}', '{fileName}', '{fileName}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}', '{ano}', '{semestre}' )")
-=======
-        c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'fileData', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileData}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
->>>>>>> Update template. Change form. Start WTFforms.
 
         conn.commit()
 
         return render_template('contribuir.html', disciplinas=disciplinas, year=year, semester=semester)
+
 
 @app.route('/termos_condicoes')
 def termos_condicoes():

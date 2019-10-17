@@ -190,7 +190,7 @@ def contribuir():
         professorName = request.form["professorName"]
         curso = request.form["curso"]
         fileName = request.form["fileName"]
-        file = request.files["file"]
+        file = request.files["fileUpload"]
         tipoArquivo = request.form["tipoArquivo"]
         ano = request.form["ano"]
         semestre = request.form["semestre"]

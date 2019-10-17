@@ -132,7 +132,7 @@ def contribuir():
             "SELECT nome FROM Disciplina ORDER BY nome", conn)
         return render_template('contribuir.html', disciplinas=disciplinas)
 
-    else:
+    elif request.method == 'POST':
         disciplina = request.form["disciplina"]
         professorName = request.form["professorName"]
         curso = request.form["curso"]

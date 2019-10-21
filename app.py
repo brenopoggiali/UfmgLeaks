@@ -1,14 +1,17 @@
+
+from werkzeug.utils import secure_filename
+from flask_bcrypt import Bcrypt
 import db
+import json
 import os
 import sqlite3
 import pandas as pd
-from flask import Flask, escape, request, render_template, redirect, url_for
+from flask import Flask, flash, escape, request, render_template, redirect, url_for
 from flask_wtf.file import FileField
 from wtforms import SubmitField
 from flask_wtf import Form
-from flask_login import (LoginManager, login_user, logout_user, login_required,
-                         login_required, current_user, UserMixin)
-from flask_bcrypt import Bcrypt
+from flask_login import LoginManager, login_user, logout_user, login_required, login_required, current_user, UserMixin
+from flask_uploads import UploadSet, configure_uploads, ALL
 
 app = Flask(__name__)
 app.secret_key = 'super secret string'
@@ -120,12 +123,16 @@ def pesquisar():
     return render_template('pesquisar.html')
 
 
+allFiles = UploadSet()
+
+app.config['UPLOADED_FILES_DEST'] = 'uploads'
+configure_uploads(app, allFiles)
+
+
 @app.route('/contribuir', methods=['GET', 'POST'])
-#@login_required
+# @login_required
 def contribuir():
 
-
-    #form = UploadForm()
     if request.method == 'GET':
         conn = sqlite3.connect('instance/database.sqlite')
         disciplinas = pd.read_sql(
@@ -137,22 +144,25 @@ def contribuir():
         professorName = request.form["professorName"]
         curso = request.form["curso"]
         fileName = request.form["fileName"]
-        file = request.files["fileUpload"]
         tipoArquivo = request.form["tipoArquivo"]
         ano = request.form["ano"]
         semestre = request.form["semestre"]
 
-        fileData = file.read()
-
         conn = sqlite3.connect('instance/database.sqlite')
         c = conn.cursor()
 
-        user_id = current_user.user_id
-        disciplina_id = pd.read_sql(f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
+        user_id = current_user.get_id()
+        disciplina_id = pd.read_sql(
+            f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
 
-        c.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'fileData', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileData}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
+        c.execute(
+            f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileName}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
 
         conn.commit()
+
+        if 'fileUpload' in request.files:
+            file = request.files['fileUpload']
+            f = allFiles.save(file)
 
         disciplinas = pd.read_sql(
             "SELECT nome FROM Disciplina ORDER BY nome", conn)
@@ -162,28 +172,3 @@ def contribuir():
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     return redirect(url_for('login', alert_auth=True))
-
-# class UploadForm(Form):
-#   disciplina = SelectField()
-#   professorName = textField()
-#   curso = SelectField()
-#   fileName = textField()
-#   file = FileField()
-#   tipoArquivo = SelectField()
-#   ano = textField()
-#   semestre = SelectField()
-#   submit = SubmitField("Enviar")
-
-# def add_database(fileName, file, tipoArquivo, professorName):
-#
-#   conn = sqlite3.connect('instance/database.sqlite')
-#   cursor = conn.cursor()
-#
-#   user_id = current_user.user_id
-#   disciplina_id = pd.read_sql(f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
-#
-#   cursor.execute(f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileLink}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
-#
-#   conn.commit()
-#   cursor.close()
-#   conn.close()

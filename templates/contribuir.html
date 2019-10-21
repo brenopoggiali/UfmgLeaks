@@ -1,5 +1,14 @@
-{% extends "layout.html" %} {% block page_title %} Contribuir {% endblock %} {%
-block sidebar %}
+{% extends "layout.html" %}
+
+{% block page_title %}
+  Contribuir
+{% endblock %}
+
+{% block page_h1 %}
+    Contribuir
+{% endblock %}
+
+{% block sidebar %}
 <li class="nav-item">
   <a class="nav-link" href="/dashboard">
     <i class="material-icons">dashboard</i>
@@ -18,10 +27,9 @@ block sidebar %}
     <p>Contribuir</p>
   </a>
 </li>
-{% endblock %} {% block content %}
-{% block page_h1 %} 
-    Contribuir 
-{% endblock %} 
+{% endblock %}
+
+{% block content %}
 <div class="col-md-8 offset-md-2">
   <div class="card">
     <div class="card-header card-header-rose card-header-icon">
@@ -32,14 +40,13 @@ block sidebar %}
     </div>
     <div class="card-body">
       <form method="post" action="{{ url_for('contribuir') }}" enctype="multipart/form-data">
-        <label> Selecione a Disciplina</label> <br />
+        <label> Selecione a Disciplina</label>
         <select
           name="disciplina"
-          class="btn btn-primary btn-round
-                    btn-block"
+          class="btn btn-primary btn-block"
         >
           {% for coluna, content in disciplinas.iterrows() %}
-          <option value="{{ content.nome }}">{{ content.nome }}</option>
+            <option value="{{ content.nome }}">{{ content.nome }}</option>
           {% endfor %}
         </select>
 
@@ -71,33 +78,17 @@ block sidebar %}
           />
         </div>
         <br />
+
         <label> Selecione o Arquivo a ser enviado </label> <br />
-        <div class="form-group bmd-form-group">
-            <span class="btn btn-primary btn-file"> Selecionar Arquivo
-              <input
-                      type=file
-                      name=fileUpload
-                      class="form-control"
-                      id="fileUpload"
-              >
-            </span>
-{#            <input type=submit class="btn btn-success" value=Upload>#}
-{#            <input#}
-{#            type="file"#}
-{#            class="form-control"#}
-{#            id="file"#}
-{#            name="file"#}
-{#          />#}
-{#            <input type="submit" value="Selecione o arquivo..."/>#}
-        </div>
+        <input type="file" name=fileUpload id="fileUpload" accept="application/pdf">
 
         <br />
-        <label> Selecione o Tipo de Arquivo</label> <br />
+        <br />
+        <label>Tipo</label>
 
         <select
           name="tipoArquivo"
-          class="btn btn-primary btn-round
-                    btn-block"
+          class="btn btn-primary btn-block"
         >
           <option value="prova">Prova</option>
           <option value="listaExercicios">Lista de Exercícios</option>
@@ -108,28 +99,22 @@ block sidebar %}
           <option value="outro">Outro</option>
         </select>
 
-        <br />
-        <div class="form-group bmd-form-group">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Ano"
-            id="ano"
-            name="ano"
-          />
-        </div>
+        <label>Ano</label>
+          <select id="ano" name="ano" class="btn btn-primary btn-block">
+            {% for ano in range(year, 1990, -1) %}
+              <option value="{{ano}}">{{ ano }}</option>>
+            {% endfor %}
+          </select>
 
-        <br />
         <label>Semestre</label>
-        <br />
-
-        <select
-          name="semestre"
-          class="btn btn-primary btn-round
-                    btn-block"
-        >
-          <option value="um">1</option>
-          <option value="dois">2</option>
+        <select name="semestre" class="btn btn-primary btn-block">
+          {% if semester == 1 %}
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+          {% else %}
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+          {% endif %}
         </select>
 
         <div class="card-footer">

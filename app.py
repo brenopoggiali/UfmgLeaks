@@ -5,6 +5,7 @@ import db
 import json
 import os
 import sqlite3
+import datetime
 import pandas as pd
 from flask import Flask, flash, escape, request, render_template, redirect, url_for
 from flask_wtf.file import FileField
@@ -190,12 +191,17 @@ configure_uploads(app, allFiles)
 @app.route('/contribuir', methods=['GET', 'POST'])
 # @login_required
 def contribuir():
+    conn = sqlite3.connect('instance/database.sqlite')
+    c = conn.cursor()
+    disciplinas = pd.read_sql( "SELECT nome FROM Disciplina ORDER BY nome", conn)
+    today = datetime.datetime.now()
+    year = today.year
+    semester = ((today.month-1)//6)+1
+
     if request.method == 'GET':
-        conn = sqlite3.connect('instance/database.sqlite')
-        disciplinas = pd.read_sql(
-            "SELECT nome FROM Disciplina ORDER BY nome", conn)
-        return render_template('contribuir.html', disciplinas=disciplinas)
-    else:
+        return render_template('contribuir.html', disciplinas=disciplinas, year=year, semester=semester)
+
+    elif request.method == 'POST':
         disciplina = request.form["disciplina"]
         professorName = request.form["professorName"]
         curso = request.form["curso"]
@@ -203,9 +209,6 @@ def contribuir():
         tipoArquivo = request.form["tipoArquivo"]
         ano = request.form["ano"]
         semestre = request.form["semestre"]
-
-        conn = sqlite3.connect('instance/database.sqlite')
-        c = conn.cursor()
 
         user_id = current_user.get_id()
         disciplina_id = pd.read_sql(
@@ -220,9 +223,7 @@ def contribuir():
             file = request.files['fileUpload']
             f = allFiles.save(file)
 
-        disciplinas = pd.read_sql(
-            "SELECT nome FROM Disciplina ORDER BY nome", conn)
-        return render_template('contribuir.html', disciplinas=disciplinas)
+        return render_template('contribuir.html', disciplinas=disciplinas, year=year, semester=semester)
 
 @app.route('/termos_condicoes')
 def termos_condicoes():

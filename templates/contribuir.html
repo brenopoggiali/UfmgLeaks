@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 
 {% block page_title %}
-Contribuir
+  Contribuir
 {% endblock %}
 
 {% block page_h1 %}
-Contribuir
+  Contribuir
 {% endblock %}
 
 {% block sidebar %}
@@ -43,7 +43,7 @@ Contribuir
         <label> Selecione a Disciplina</label>
         <select name="disciplina" class="btn btn-primary btn-block">
           {% for coluna, content in disciplinas.iterrows() %}
-          <option value="{{ content.nome }}">{{ content.nome }}</option>
+            <option value="{{ content.nome }}">{{ content.nome }}</option>
           {% endfor %}
         </select>
 
@@ -77,21 +77,20 @@ Contribuir
         </select>
 
         <label>Ano</label>
-        <select id="ano" name="ano" class="btn btn-primary btn-block">
-          {% for ano in range(year - 1, 1990, -1) %}
-          <option value="{{ano}}">{{ ano }}</option>>
-          {% endfor %}
-          <option selected value="{{year}}">{{ year }}</option>>
-        </select>
+          <select id="ano" name="ano" class="btn btn-primary btn-block">
+            {% for ano in range(year, 1990, -1) %}
+              <option value="{{ano}}">{{ ano }}</option>>
+            {% endfor %}
+          </select>
 
         <label>Semestre</label>
         <select name="semestre" class="btn btn-primary btn-block">
           {% if semester == 1 %}
-          <option value="1" selected>1</option>
-          <option value="2">2</option>
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
           {% else %}
-          <option value="1">1</option>
-          <option value="2" selected>2</option>
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
           {% endif %}
         </select>
 

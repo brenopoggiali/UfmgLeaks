@@ -19,6 +19,9 @@ block sidebar %}
   </a>
 </li>
 {% endblock %} {% block content %}
+{% block page_h1 %} 
+    Contribuir 
+{% endblock %} 
 <div class="col-md-8 offset-md-2">
   <div class="card">
     <div class="card-header card-header-rose card-header-icon">
@@ -28,7 +31,7 @@ block sidebar %}
       <h4 class="card-title">Formulário de Contribuição</h4>
     </div>
     <div class="card-body">
-      <form method="post" action="{{ url_for('contribuir') }}">
+      <form method="post" action="{{ url_for('contribuir') }}" enctype="multipart/form-data">
         <label> Selecione a Disciplina</label> <br />
         <select
           name="disciplina"
@@ -70,12 +73,22 @@ block sidebar %}
         <br />
         <label> Selecione o Arquivo a ser enviado </label> <br />
         <div class="form-group bmd-form-group">
-          <input
-            type="file"
-            class="form-control"
-            id="file"
-            name="file"
-          />
+            <span class="btn btn-primary btn-file"> Selecionar Arquivo
+              <input
+                      type=file
+                      name=fileUpload
+                      class="form-control"
+                      id="fileUpload"
+              >
+            </span>
+{#            <input type=submit class="btn btn-success" value=Upload>#}
+{#            <input#}
+{#            type="file"#}
+{#            class="form-control"#}
+{#            id="file"#}
+{#            name="file"#}
+{#          />#}
+{#            <input type="submit" value="Selecione o arquivo..."/>#}
         </div>
 
         <br />

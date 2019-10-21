@@ -257,7 +257,6 @@ def contribuir():
 def termos_condicoes():
     return render_template('termos_condicoes.html')
 
-
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     return redirect(url_for('login', alert_auth=True))

@@ -210,8 +210,12 @@ app.config['UPLOAD_DEST'] = os.getcwd() + '/uploads'
 def contribuir():
     conn = sqlite3.connect('instance/database.sqlite')
     c = conn.cursor()
+<<<<<<< HEAD
     disciplinas = pd.read_sql(
         "SELECT nome FROM Disciplina ORDER BY nome", conn)
+=======
+    disciplinas = pd.read_sql( "SELECT nome FROM Disciplina ORDER BY nome", conn)
+>>>>>>> Update form frontend
     today = datetime.datetime.now()
     year = today.year
     semester = ((today.month-1)//6)+1
@@ -252,6 +256,10 @@ def contribuir():
 
         return render_template('contribuir.html', disciplinas=disciplinas, year=year, semester=semester)
 
+<<<<<<< HEAD
+=======
+        return render_template('contribuir.html', disciplinas=disciplinas, year=year, semester=semester)
+>>>>>>> Update form frontend
 
 @app.route('/termos_condicoes')
 def termos_condicoes():

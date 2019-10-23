@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> c0274cf52df5f7f76960a469a533c54cb36ca2ec
 from models import User
 from werkzeug.utils import secure_filename
 from flask_bcrypt import Bcrypt
@@ -152,13 +148,7 @@ def pesquisar():
         departamento = request.form['departamento']
         if(departamento == ''):
             departamento = False
-<<<<<<< HEAD
-        print(arquivo)
         return redirect(url_for('pesquisa_result', arquivo=arquivo.capitalize(), disciplina=disciplina, ano=ano,
-=======
-
-        return redirect(url_for('pesquisa_result', arquivo=arquivo, disciplina=disciplina, ano=ano,
->>>>>>> c0274cf52df5f7f76960a469a533c54cb36ca2ec
                                 semestre=semestre, professor=professor, departamento=departamento))
 
 
@@ -221,21 +211,14 @@ def contribuir():
     c = conn.cursor()
     disciplinas = pd.read_sql(
         "SELECT nome FROM Disciplina ORDER BY nome", conn)
-<<<<<<< HEAD
     cursos = pd.read_sql(
         "SELECT nome FROM Curso ORDER BY nome", conn)
-=======
->>>>>>> c0274cf52df5f7f76960a469a533c54cb36ca2ec
     today = datetime.datetime.now()
     year = today.year
     semester = ((today.month-1)//6)+1
 
     if request.method == 'GET':
-<<<<<<< HEAD
         return render_template('contribuir.html', cursos= cursos, disciplinas=disciplinas, year=year, semester=semester)
-=======
-        return render_template('contribuir.html', disciplinas=disciplinas, year=year, semester=semester)
->>>>>>> c0274cf52df5f7f76960a469a533c54cb36ca2ec
 
     elif request.method == 'POST':
         disciplina = request.form["disciplina"]

@@ -12,12 +12,6 @@ from flask_wtf.file import FileField
 from wtforms import SubmitField
 from flask_wtf import Form
 from flask_login import LoginManager, login_user, logout_user, login_required, login_required, current_user, UserMixin
-<<<<<<< HEAD
-from flask_bcrypt import Bcrypt
-from io import BytesIO
-from flask_uploads import UploadSet, configure_uploads, ALL
-=======
->>>>>>> contribuir funcionando + refactor ano selector
 
 app = Flask(__name__)
 app.secret_key = 'super secret string'
@@ -185,7 +179,7 @@ def pesquisa_result(arquivo='False', disciplina='False', ano='False',
     return render_template('pesquisa_result.html', result=result)
 
 
-app.config['UPLOAD_DEST'] = '/home/joaoh9/git-folder/UfmgLeaks/uploads'
+app.config['UPLOAD_DEST'] = os.getcwd() + '/uploads'
 
 
 @app.route('/contribuir', methods=['GET', 'POST'])

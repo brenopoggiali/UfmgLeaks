@@ -749,19 +749,19 @@ demo = {
       }).catch(swal.noop)
     } else if (type == 'warning-message-and-cancel') {
       swal({
-        title: 'Are you sure?',
-        text: 'You will not be able to recover this imaginary file!',
+        title: 'Tem certeza que deseja excluir?',
+        text: 'Você não conseguirá recuperar o arquivo!',
         type: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'No, keep it',
+        confirmButtonText: 'Sim, pode deletar!',
+        cancelButtonText: 'Não, vou mantê-lo.',
         confirmButtonClass: "btn btn-success",
         cancelButtonClass: "btn btn-danger",
         buttonsStyling: false
       }).then(function() {
         swal({
-          title: 'Deleted!',
-          text: 'Your imaginary file has been deleted.',
+          title: 'Excluído!',
+          text: 'Seu arquivo foi deletado.',
           type: 'success',
           confirmButtonClass: "btn btn-success",
           buttonsStyling: false

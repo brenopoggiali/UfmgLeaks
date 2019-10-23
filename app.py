@@ -106,7 +106,7 @@ def dashboard():
                                 ORDER BY Arquivo.id DESC LIMIT 10", conn)
   return render_template('dashboard.html', meus_arquivos = meus_arquivos, arquivos_gerais = arquivos_gerais)
 
-@app.route('/pesquisar')
+@app.route('/pesquisar',  methods=['GET', 'POST'])
 @login_required
 def pesquisar():
     if request.method == 'GET':

@@ -12,7 +12,6 @@ from flask_wtf.file import FileField
 from wtforms import SubmitField
 from flask_wtf import Form
 from flask_login import LoginManager, login_user, logout_user, login_required, login_required, current_user, UserMixin
-from flask_uploads import UploadSet, configure_uploads, ALL
 
 app = Flask(__name__)
 app.secret_key = 'super secret string'
@@ -124,10 +123,7 @@ def pesquisar():
     return render_template('pesquisar.html')
 
 
-allFiles = UploadSet()
-
-app.config['UPLOADED_FILES_DEST'] = 'uploads'
-configure_uploads(app, allFiles)
+app.config['UPLOAD_DEST'] = '/home/joaoh9/git-folder/UfmgLeaks/uploads'
 
 
 @app.route('/contribuir', methods=['GET', 'POST'])
@@ -135,7 +131,8 @@ configure_uploads(app, allFiles)
 def contribuir():
     conn = sqlite3.connect('instance/database.sqlite')
     c = conn.cursor()
-    disciplinas = pd.read_sql( "SELECT nome FROM Disciplina ORDER BY nome", conn)
+    disciplinas = pd.read_sql(
+        "SELECT nome FROM Disciplina ORDER BY nome", conn)
     today = datetime.datetime.now()
     year = today.year
     semester = ((today.month-1)//6)+1
@@ -147,7 +144,6 @@ def contribuir():
         disciplina = request.form["disciplina"]
         professorName = request.form["professorName"]
         curso = request.form["curso"]
-        fileName = request.form["fileName"]
         tipoArquivo = request.form["tipoArquivo"]
         ano = request.form["ano"]
         semestre = request.form["semestre"]
@@ -156,14 +152,21 @@ def contribuir():
         disciplina_id = pd.read_sql(
             f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
 
+        if 'fileUpload' in request.files:
+            file = request.files['fileUpload']
+            newFileName = '-'.join(file.filename.split())
+            file.save(os.path.join(
+                app.config["UPLOAD_DEST"], str(today.microsecond) + "_" + newFileName))
+            fileName = str(today.microsecond) + "_" + newFileName
+        else:
+            fileName = "no_file_selected"
+
+        print(fileName)
+
         c.execute(
             f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor') VALUES ('{user_id}', '{fileName}', '{fileName}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}' )")
 
         conn.commit()
-
-        if 'fileUpload' in request.files:
-            file = request.files['fileUpload']
-            f = allFiles.save(file)
 
         return render_template('contribuir.html', disciplinas=disciplinas, year=year, semester=semester)
 

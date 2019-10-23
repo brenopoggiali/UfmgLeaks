@@ -148,8 +148,8 @@ def pesquisar():
         departamento = request.form['departamento']
         if(departamento == ''):
             departamento = False
-
-        return redirect(url_for('pesquisa_result', arquivo=arquivo, disciplina=disciplina, ano=ano,
+        print(arquivo)
+        return redirect(url_for('pesquisa_result', arquivo=arquivo.capitalize(), disciplina=disciplina, ano=ano,
                                 semestre=semestre, professor=professor, departamento=departamento))
 
 
@@ -212,12 +212,14 @@ def contribuir():
     c = conn.cursor()
     disciplinas = pd.read_sql(
         "SELECT nome FROM Disciplina ORDER BY nome", conn)
+    cursos = pd.read_sql(
+        "SELECT nome FROM Curso ORDER BY nome", conn)
     today = datetime.datetime.now()
     year = today.year
     semester = ((today.month-1)//6)+1
 
     if request.method == 'GET':
-        return render_template('contribuir.html', disciplinas=disciplinas, year=year, semester=semester)
+        return render_template('contribuir.html', cursos= cursos, disciplinas=disciplinas, year=year, semester=semester)
 
     elif request.method == 'POST':
         disciplina = request.form["disciplina"]

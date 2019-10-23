@@ -40,31 +40,18 @@
     </div>
     <div class="card-body">
       <form method="post" action="{{ url_for('contribuir') }}" enctype="multipart/form-data">
+        <label> Selecione o Curso</label>
+        <select name="disciplina" class="btn btn-primary btn-block">
+          {% for coluna, content in cursos.iterrows() %}
+          <option value="{{ content.nome }}">{{ content.nome }}</option>
+          {% endfor %}
+        </select>
         <label> Selecione a Disciplina</label>
         <select name="disciplina" class="btn btn-primary btn-block">
           {% for coluna, content in disciplinas.iterrows() %}
           <option value="{{ content.nome }}">{{ content.nome }}</option>
           {% endfor %}
         </select>
-
-        <div class="form-group bmd-form-group">
-          <input type="text" class="form-control" placeholder="Nome do professor" id="professorName"
-            name="professorName" />
-        </div>
-        <div class="form-group bmd-form-group">
-          <input type="text" class="form-control" placeholder="Curso" id="curso" name="curso" />
-        </div>
-        <div class="form-group bmd-form-group">
-          <input type="text" class="form-control" placeholder="Dê um nome ao seu arquivo" id="fileName"
-            name="fileName" />
-        </div>
-        <br />
-
-        <label> Selecione o Arquivo a ser enviado </label> <br />
-        <input type="file" name=fileUpload id="fileUpload">
-
-        <br />
-        <br />
         <label>Tipo</label>
 
         <select name="tipoArquivo" class="btn btn-primary btn-block">
@@ -95,6 +82,22 @@
           <option value="2" selected>2</option>
           {% endif %}
         </select>
+        <br />
+        <div class="form-group bmd-form-group">
+          <input type="text" class="form-control" placeholder="Nome do professor" id="professorName"
+            name="professorName" />
+        </div>
+        <div class="form-group bmd-form-group">
+          <input type="text" class="form-control" placeholder="Dê um nome ao seu arquivo" id="fileName"
+            name="fileName" />
+        </div>
+        <br />
+
+        <label> Selecione o Arquivo a ser enviado </label> <br />
+        <input type="file" name=fileUpload id="fileUpload">
+
+        <br />
+        <br />
 
         <div class="card-footer">
           <button type="submit" class="btn btn-fill btn-rose">Enviar</button>

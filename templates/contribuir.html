@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 
 {% block page_title %}
-  Contribuir
+Contribuir
 {% endblock %}
 
 {% block page_h1 %}
-  Contribuir
+Contribuir
 {% endblock %}
 
 {% block sidebar %}
@@ -41,15 +41,15 @@
     <div class="card-body">
       <form method="post" action="{{ url_for('contribuir') }}" enctype="multipart/form-data">
         <label> Selecione o Curso</label>
-        <select name="disciplina" class="btn btn-primary btn-block">
+        <select name="curso" id="curso" class="btn btn-primary btn-block">
           {% for coluna, content in cursos.iterrows() %}
-          <option value="{{ content.nome }}">{{ content.nome }}</option>
+          <option selected value="{{ content.nome }}">{{ content.nome }}</option>
           {% endfor %}
         </select>
         <label> Selecione a Disciplina</label>
-        <select name="disciplina" class="btn btn-primary btn-block">
+        <select name="disciplina" id="disciplina" class="btn btn-primary btn-block">
           {% for coluna, content in disciplinas.iterrows() %}
-          <option value="{{ content.nome }}">{{ content.nome }}</option>
+          <option selected value="{{ content.nome }}">{{ content.nome }}</option>
           {% endfor %}
         </select>
         <label>Tipo</label>

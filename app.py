@@ -153,9 +153,6 @@ def pesquisar():
         departamento = request.form['departamento']
         if(departamento == ''): departamento=False
 
-        print(arquivo, disciplina, ano, semestre, professor, departamento)
-
-
         return redirect(url_for('pesquisa_result', arquivo=arquivo, disciplina=disciplina, ano=ano,
                                 semestre=semestre, professor=professor, departamento=departamento))
 
@@ -180,8 +177,6 @@ def pesquisa_result(arquivo='False', disciplina='False', ano='False',
     if 'professor' in request.args: professor = request.args['professor']
     if 'departamento' in request.args: departamento = request.args['departamento']
 
-    print('\n', arquivo, disciplina, ano, semestre, professor, departamento, '\n')
-
     if(arquivo != 'False'):
         query = query+f" WHERE Arquivo.tipo='{arquivo}'"
 
@@ -200,7 +195,6 @@ def pesquisa_result(arquivo='False', disciplina='False', ano='False',
     if(departamento != 'False'):
         query = query+f" AND Departamento.nome='{departamento}'"
 
-    print(query)
     result = pd.read_sql(query, conn)
     return render_template('pesquisa_result.html', result=result)
 
@@ -251,9 +245,6 @@ def contribuir():
         conn.commit()
 
         return render_template('contribuir.html', disciplinas=disciplinas, year=year, semester=semester)
-
-class UploadForm(Form):
-    file = FileField
 
 @app.route('/termos_condicoes')
 def termos_condicoes():

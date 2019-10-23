@@ -48,7 +48,8 @@ CREATE TABLE Curso_Disciplina (
 );
 
 INSERT INTO Users ("email", "nome", "encrypted_password") VALUES
-("foo@bar.tld", "Usuário Teste", "$2b$12$9wVjTgsFGMex73gvCNn.HepYrvrrSTK8hqiNJxOda4NPrrEr4HxIm");
+("foo@bar.tld", "Usuário Teste", "$2b$12$9wVjTgsFGMex73gvCNn.HepYrvrrSTK8hqiNJxOda4NPrrEr4HxIm"),
+("gabineme@gmail.com", "Gabriela", "$2b$12$9wVjTgsFGMex73gvCNn.HepYrvrrSTK8hqiNJxOda4NPrrEr4HxIm");
 
 INSERT INTO Curso ("nome") VALUES
 ('Relações Econômicas Internacionais'),
@@ -4533,4 +4534,20 @@ INSERT INTO Curso_Disciplina("id_curso", "id_disciplina") VALUES
 ((select id from Curso where nome = 'Farmácia'), (select id from Disciplina where codigo = 'PFA615')),
 ((select id from Curso where nome = 'Farmácia'), (select id from Disciplina where codigo = 'PFA617')),
 ((select id from Curso where nome = 'Farmácia'), (select id from Disciplina where codigo = 'QUI211'));
+
+INSERT INTO Arquivo ("id_contribuinte", "nome", "link", "id_disciplina", "tipo", "ano", "semestre", "professor") VALUES
+
+(1, "Prova 1", "link aqui", (select id from Disciplina where nome = "MATEMATICA DISCRETA" ), "Prova", 2018, 1, "Loureiro"),
+(1, "Prova 2", "link aqui3", (select id from Disciplina where nome = "MATEMATICA DISCRETA" ), "Prova", 2018, 1, "Loureiro"),
+(1, "Prova 3", "link aqui4", (select id from Disciplina where nome = "MATEMATICA DISCRETA" ), "Prova", 2018, 1, "Loureiro"),
+(1, "Prova 1", "link aqui5", (select id from Disciplina where nome = "CALCULO DIFERENCIAL E INTEGRAL I" ), "Prova", 2018, 1, "Sasha"),
+(2, "Prova 2", "link aqui6", (select id from Disciplina where nome = "CALCULO DIFERENCIAL E INTEGRAL I" ), "Prova", 2018, 1, "Viktor Bekert"),
+(2, "TP Final", "link aqui2", (select id from Disciplina where nome = "MATEMATICA DISCRETA" ), "Trabalho",2018, 2, "Coutinho"),
+(2, "TP 1", "link aqui13", (select id from Disciplina where nome = "ALGORITMOS I" ), "Trabalho",2019, 2, "Jussara"),
+(2, "TP 2", "link aqui12", (select id from Disciplina where nome = "ALGORITMOS I" ), "Trabalho",2019, 2, "Jussara"),
+(1, "Prova 1", "link aqui9", (select id from Disciplina where nome = "ENGENHARIA DE SOFTWARE" ), "Prova",2019, 1, "Marco Túlio"),
+(1, "Prova 2", "link aqui10", (select id from Disciplina where nome = "ENGENHARIA DE SOFTWARE" ), "Prova",2019, 1, "Marco Túlio"),
+(1, "Trabalho em grupo", "link aqui11", (select id from Disciplina where nome = "ENGENHARIA DE SOFTWARE" ), "Trabalho",2019, 1, "Marco Túlio"),
+(2, "Prova 1", "link aqui7", (select id from Disciplina where nome = "CONCRETO ARMADO I" ), "Prova",2013, 1, "Otávio"),
+(2, "Prova 1", "link aqui8", (select id from Disciplina where nome = "CONCRETO ARMADO II" ), "Prova",2013, 2, "Piruca");
 

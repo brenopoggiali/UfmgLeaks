@@ -3,6 +3,9 @@
 {% block page_title %}
     Pesquisar
 {% endblock %}
+{% block page_h1 %}
+    Pesquisar
+{% endblock %}
 
 {% block sidebar %}
 <li class="nav-item ">
@@ -40,6 +43,13 @@
     <div class="card-body ">
       <form class="form-horizontal", action="{{ url_for('pesquisar') }}" method="post">
         <br>
+        <label> Selecione a Disciplina</label>
+        <select name="disciplina" class="btn btn-primary btn-block">
+          {% for coluna, content in disciplinas.iterrows() %}
+          <option value="{{ content.nome }}">{{ content.nome }}</option>
+          {% endfor %}
+        </select>
+        <br>
         <label> Selecione o Tipo de Arquivo</label> <br>
         <select name="tipoArquivo" class="btn btn-primary btn-block"
             id="tipoArquivo">
@@ -51,13 +61,6 @@
             <option value="slide">Slide</option>
             <option value="outro">Outro</option>
         </select>
-        <br>
-        <label> Selecione a Disciplina</label> <br />
-        <div class="form-group bmd-form-group">
-                   <input placeholder="Disciplina" type="text"
-                       class="form-control" name="disciplina"
-                       id="disciplina">
-        </div>
         <br>
         <div class="form-group bmd-form-group">
                    <input placeholder="Ano" max="2200" min="1970" type="number"

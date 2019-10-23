@@ -1,30 +1,109 @@
 {% extends "layout.html" %}
 
 {% block page_title %}
-    Contribuir
+Contribuir
+{% endblock %}
+
+{% block page_h1 %}
+Contribuir
 {% endblock %}
 
 {% block sidebar %}
-<li class="nav-item ">
-    <a class="nav-link" href="/dashboard">
-        <i class="material-icons">dashboard</i>
-        <p>Dashboard</p>
-    </a>
+<li class="nav-item">
+  <a class="nav-link" href="/dashboard">
+    <i class="material-icons">dashboard</i>
+    <p>Dashboard</p>
+  </a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="/pesquisar">
-        <i class="material-icons">search</i>
-        <p>Pesquisar</p>
-    </a>
+  <a class="nav-link" href="/pesquisar">
+    <i class="material-icons">search</i>
+    <p>Pesquisar</p>
+  </a>
 </li>
 <li class="nav-item active">
-    <a class="nav-link" href="/contribuir">
-        <i class="material-icons">cloud_upload</i>
-        <p>Contribuir</p>
-    </a>
+  <a class="nav-link" href="/contribuir">
+    <i class="material-icons">cloud_upload</i>
+    <p>Contribuir</p>
+  </a>
 </li>
 {% endblock %}
 
 {% block content %}
-    contribuir
+<div class="col-md-8 offset-md-2">
+  <div class="card">
+    <div class="card-header card-header-rose card-header-icon">
+      <div class="card-icon">
+        <i class="material-icons">form</i>
+      </div>
+      <h4 class="card-title">Formulário de Contribuição</h4>
+    </div>
+    <div class="card-body">
+      <form method="post" action="{{ url_for('contribuir') }}" enctype="multipart/form-data">
+        <label> Selecione o Curso</label>
+        <select name="curso" id="curso" class="btn btn-primary btn-block">
+          {% for coluna, content in cursos.iterrows() %}
+          <option selected value="{{ content.nome }}">{{ content.nome }}</option>
+          {% endfor %}
+        </select>
+        <label> Selecione a Disciplina</label>
+        <select name="disciplina" id="disciplina" class="btn btn-primary btn-block">
+          {% for coluna, content in disciplinas.iterrows() %}
+          <option selected value="{{ content.nome }}">{{ content.nome }}</option>
+          {% endfor %}
+        </select>
+        <label>Tipo</label>
+
+        <select name="tipoArquivo" class="btn btn-primary btn-block">
+          <option selected value="prova">Prova</option>
+          <option value="listaExercicios">Lista de Exercícios</option>
+          <option value="apostila">Apostila</option>
+          <option value="livro">Livro</option>
+          <option value="trabalho">Trabalho</option>
+          <option value="slide">Slide</option>
+          <option value="outro">Outro</option>
+        </select>
+
+        <label>Ano</label>
+        <select id="ano" name="ano" class="btn btn-primary btn-block">
+          {% for ano in range(year - 1, 1990, -1) %}
+          <option value="{{ano}}">{{ ano }}</option>>
+          {% endfor %}
+          <option selected value="{{year}}">{{ year }}</option>>
+        </select>
+
+        <label>Semestre</label>
+        <select name="semestre" class="btn btn-primary btn-block">
+          {% if semester == 1 %}
+          <option value="1" selected>1</option>
+          <option value="2">2</option>
+          {% else %}
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          {% endif %}
+        </select>
+        <br />
+        <div class="form-group bmd-form-group">
+          <input type="text" class="form-control" placeholder="Nome do professor" id="professorName"
+            name="professorName" />
+        </div>
+        <div class="form-group bmd-form-group">
+          <input type="text" class="form-control" placeholder="Dê um nome ao seu arquivo" id="fileName"
+            name="fileName" />
+        </div>
+        <br />
+
+        <label> Selecione o Arquivo a ser enviado </label> <br />
+        <input type="file" name=fileUpload id="fileUpload">
+
+        <br />
+        <br />
+
+        <div class="card-footer">
+          <button type="submit" class="btn btn-fill btn-rose">Enviar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

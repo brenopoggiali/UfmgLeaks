@@ -213,22 +213,24 @@ def contribuir():
         "SELECT nome FROM Disciplina ORDER BY nome", conn)
     cursos = pd.read_sql(
         "SELECT nome FROM Curso ORDER BY nome", conn)
+
     today = datetime.datetime.now()
     year = today.year
     semester = ((today.month-1)//6)+1
 
     if request.method == 'GET':
-        return render_template('contribuir.html', cursos= cursos, disciplinas=disciplinas, year=year, semester=semester)
+        return render_template('contribuir.html', cursos=cursos, disciplinas=disciplinas, year=year, semester=semester)
 
     elif request.method == 'POST':
-        disciplina = request.form["disciplina"]
-        professorName = request.form["professorName"]
         curso = request.form["curso"]
+        disciplina = request.form["disciplina"]
         tipoArquivo = request.form["tipoArquivo"]
         ano = request.form["ano"]
         semestre = request.form["semestre"]
+        professorName = request.form["professorName"]
 
         user_id = current_user.get_id()
+
         disciplina_id = pd.read_sql(
             f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
 
@@ -251,7 +253,7 @@ def contribuir():
 
         conn.commit()
 
-        return render_template('contribuir.html', disciplinas=disciplinas, year=year, semester=semester)
+        return render_template('contribuir.html', cursos=cursos, disciplinas=disciplinas, year=year, semester=semester)
 
 
 @app.route('/termos_condicoes')

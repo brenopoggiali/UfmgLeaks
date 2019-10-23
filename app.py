@@ -224,12 +224,13 @@ def contribuir():
     elif request.method == 'POST':
         curso = request.form["curso"]
         disciplina = request.form["disciplina"]
-        tipoArquivo = request.form["tipoArquivo"]
+        tipoArquivo = request.form["tipoArquivo"].capitalize()
         ano = request.form["ano"]
         semestre = request.form["semestre"]
         professorName = request.form["professorName"]
 
         user_id = current_user.get_id()
+        user_id = pd.read_sql(f"SELECT id FROM Users WHERE email='{user_id}'", conn).iloc[0]["id"]
 
         disciplina_id = pd.read_sql(
             f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)

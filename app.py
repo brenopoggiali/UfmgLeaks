@@ -132,7 +132,7 @@ def pesquisar():
     return render_template('pesquisar.html')
 
 
-app.config['UPLOAD_DEST'] = '/home/joaoh9/git-folder/UfmgLeaks/uploads'
+app.config['UPLOAD_DEST'] = os.getcwd() + '/uploads'
 
 
 @app.route('/contribuir', methods=['GET', 'POST'])

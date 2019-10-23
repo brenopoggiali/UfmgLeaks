@@ -159,7 +159,7 @@ def pesquisa_result(arquivo='False', disciplina='False', ano='False',
 
     conn = sqlite3.connect('instance/database.sqlite')
     query = f"SELECT Arquivo.tipo, Disciplina.nome as disciplina, \
-    Arquivo.nome as arquivo, Arquivo.semestre, Arquivo.professor, \
+    Arquivo.nome as arquivo, Arquivo.Ano, Arquivo.semestre, Arquivo.professor, \
     Departamento.nome as departamento \
     FROM Arquivo JOIN Disciplina \
     ON Arquivo.id_disciplina=Disciplina.id JOIN Departamento \

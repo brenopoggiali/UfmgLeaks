@@ -1,6 +1,6 @@
 *.zip
 .vscode
-__pycache__
+__pycache__/
 template-fodao
 static/demo
 env

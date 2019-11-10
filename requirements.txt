@@ -4,3 +4,6 @@ flask_bcrypt
 pandas==0.25.1
 flask_wtf==0.14
 flask_uploads==0.2.1
+unittest
+flask_script
+coverage==4.5.4

@@ -1,6 +1,8 @@
 Flask==1.0.2
 flask-login==0.4.1
 flask_bcrypt
-pandas==0.25.1
 flask_wtf==0.14
 flask_uploads==0.2.1
+pandas==0.25.1
+flask_script
+coverage==4.5.4

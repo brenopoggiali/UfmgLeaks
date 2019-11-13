@@ -50,6 +50,7 @@ CREATE TABLE Curso_Disciplina (
 INSERT INTO Users ("email", "nome", "encrypted_password") VALUES
 ("foo@bar.tld", "Usuário Teste", "$2b$12$9wVjTgsFGMex73gvCNn.HepYrvrrSTK8hqiNJxOda4NPrrEr4HxIm"),
 ("gabineme@gmail.com", "Gabriela", "$2b$12$9wVjTgsFGMex73gvCNn.HepYrvrrSTK8hqiNJxOda4NPrrEr4HxIm");
+("joao@email.com", "Joao H", "$2b$12$9wVjTgsFGMex73gvCNn.HepYrvrrSTK8hqiNJxOda4NPrrEr4HxIm");
 
 INSERT INTO Curso ("nome") VALUES
 ('Relações Econômicas Internacionais'),
@@ -4550,4 +4551,3 @@ INSERT INTO Arquivo ("id_contribuinte", "nome", "link", "id_disciplina", "tipo",
 (1, "Trabalho em grupo", "link aqui11", (select id from Disciplina where nome = "ENGENHARIA DE SOFTWARE" ), "Trabalho",2019, 1, "Marco Túlio"),
 (2, "Prova 1", "link aqui7", (select id from Disciplina where nome = "CONCRETO ARMADO I" ), "Prova",2013, 1, "Otávio"),
 (2, "Prova 1", "link aqui8", (select id from Disciplina where nome = "CONCRETO ARMADO II" ), "Prova",2013, 2, "Piruca");
-

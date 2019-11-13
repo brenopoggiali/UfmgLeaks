@@ -21,8 +21,7 @@ login_manager.init_app(app)
 
 ## DATABASE ##
 
-app.config['SQLITE3_DATABASE_URI'] = os.path.join(
-    app.instance_path, 'database.sqlite')
+app.config['SQLITE3_DATABASE_URI'] = os.path.join(app.instance_path, 'database.sqlite')
 db.init_app(app)
 
 ## LOGIN ##
@@ -205,7 +204,7 @@ app.config['UPLOAD_DEST'] = os.getcwd() + '/uploads'
 
 
 @app.route('/contribuir', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def contribuir():
     conn = sqlite3.connect('instance/database.sqlite')
     c = conn.cursor()
@@ -238,7 +237,6 @@ def contribuir():
         if 'fileUpload' in request.files:
             file = request.files['fileUpload']
             newFileName = '-'.join(file.filename.split())
-            print(os.path.exists('/uploads'))
             if os.path.exists(os.getcwd() + '/uploads') is False:
                 os.makedirs('uploads')
             file.save(os.path.join(
@@ -246,8 +244,6 @@ def contribuir():
             fileName = str(today.microsecond) + "_" + newFileName
         else:
             fileName = "no_file_selected"
-
-        print(fileName)
 
         c.execute(
             f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor', 'ano', 'semestre') VALUES ('{user_id}', '{fileName}', '{fileName}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}', '{ano}', '{semestre}' )")

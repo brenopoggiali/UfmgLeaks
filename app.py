@@ -1,17 +1,13 @@
 from models import User
-from werkzeug.utils import secure_filename
 from flask_bcrypt import Bcrypt
 import db
-import json
 import os
 import sqlite3
 import datetime
 import pandas as pd
-from flask import Flask, flash, escape, request, render_template, redirect, url_for
-from flask_wtf.file import FileField
-from wtforms import SubmitField
-from flask_wtf import Form
-from flask_login import LoginManager, login_user, logout_user, login_required, login_required, current_user, UserMixin
+from flask import Flask, request, render_template, redirect, url_for
+from flask_login import LoginManager, login_user, logout_user, \
+                        login_required, current_user
 
 app = Flask(__name__)
 app.secret_key = 'super secret string'
@@ -19,12 +15,13 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-## DATABASE ##
+# DATABASE ##
 
-app.config['SQLITE3_DATABASE_URI'] = os.path.join(app.instance_path, 'database.sqlite')
+app.config['SQLITE3_DATABASE_URI'] = os.path.join(app.instance_path,
+                                                  'database.sqlite')
 db.init_app(app)
 
-## LOGIN ##
+# LOGIN ##
 @login_manager.user_loader
 def user_loader(email):
     conn = sqlite3.connect('instance/database.sqlite')
@@ -36,7 +33,7 @@ def user_loader(email):
     user.id = email
     return user
 
-## ROUTES ##
+# ROUTES ##
 @app.route('/')
 def index():
     return redirect(url_for('login'))
@@ -49,7 +46,8 @@ def login(alert_auth=False, created_user=False):
             alert_auth = request.args['alert_auth']
         if 'created_user' in request.args:
             created_user = request.args['created_user']
-        return render_template('login.html', alert_auth=alert_auth, created_user=created_user, wrong_data=False)
+        return render_template('login.html', alert_auth=alert_auth,
+                               created_user=created_user, wrong_data=False)
     else:
         conn = sqlite3.connect('instance/database.sqlite')
         email = request.form['email']
@@ -57,14 +55,20 @@ def login(alert_auth=False, created_user=False):
             f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
         email_in_db = user.size
         pw_hash = pd.read_sql(
-            f"SELECT encrypted_password FROM Users WHERE Users.email='{email}'", conn)
-        if email_in_db and bcrypt.check_password_hash(pw_hash.iloc[0]['encrypted_password'], request.form['password']):
+            f"SELECT encrypted_password FROM Users \
+              WHERE Users.email='{email}'", conn)
+        if email_in_db and bcrypt.check_password_hash(
+            pw_hash.iloc[0]['encrypted_password'],
+            request.form['password']
+        ):
             user = User()
             user.id = email
             login_user(user)
             return redirect(url_for('dashboard'))
         else:
-            return render_template('login.html', alert_auth=True, wrong_data=True)
+            return render_template('login.html',
+                                   alert_auth=True,
+                                   wrong_data=True)
 
 
 @app.route('/logout')
@@ -94,7 +98,8 @@ def register(email_exists=False):
             pw_hash = bcrypt.generate_password_hash(request.form['password'])
             pw_hash = str(pw_hash)[2:len(pw_hash)+2]
             c.execute(
-                f"INSERT INTO Users ('nome', 'email', 'encrypted_password') VALUES ('{nome_pessoa}', '{email}', '{pw_hash}')")
+                f"INSERT INTO Users ('nome', 'email', 'encrypted_password') \
+                VALUES ('{nome_pessoa}', '{email}', '{pw_hash}')")
             conn.commit()
             return redirect(url_for('login', created_user=True))
 
@@ -103,16 +108,22 @@ def register(email_exists=False):
 @login_required
 def dashboard():
     conn = sqlite3.connect('instance/database.sqlite')
-    meus_arquivos = pd.read_sql(f"SELECT Arquivo.nome, Arquivo.tipo, Disciplina.nome, Arquivo.professor, ano, semestre \
-                                FROM Arquivo JOIN Users ON Arquivo.id_contribuinte = Users.id \
-                                JOIN Disciplina ON Arquivo.id_disciplina = Disciplina.id \
-                                WHERE Users.email='{current_user.id}' ORDER BY Arquivo.id DESC LIMIT 100", conn)
-    arquivos_gerais = pd.read_sql(f"SELECT Arquivo.nome, Users.nome, Arquivo.tipo, Disciplina.nome, Arquivo.professor, \
-                                ano, semestre \
-                                FROM Arquivo JOIN Users ON Arquivo.id_contribuinte = Users.id \
-                                JOIN Disciplina ON Arquivo.id_disciplina = Disciplina.id \
-                                ORDER BY Arquivo.id DESC LIMIT 10", conn)
-    return render_template('dashboard.html', meus_arquivos=meus_arquivos, arquivos_gerais=arquivos_gerais)
+    meus_arquivos = pd.read_sql(
+        f"SELECT Arquivo.nome, Arquivo.tipo, Disciplina.nome, \
+        Arquivo.professor, ano, semestre \
+        FROM Arquivo JOIN Users ON Arquivo.id_contribuinte = Users.id \
+        JOIN Disciplina ON Arquivo.id_disciplina = Disciplina.id \
+        WHERE Users.email='{current_user.id}' \
+        ORDER BY Arquivo.id DESC LIMIT 100", conn)
+    arquivos_gerais = pd.read_sql(
+        f"SELECT Arquivo.nome, Users.nome, Arquivo.tipo, Disciplina.nome, \
+        Arquivo.professor, ano, semestre \
+        FROM Arquivo JOIN Users ON Arquivo.id_contribuinte = Users.id \
+        JOIN Disciplina ON Arquivo.id_disciplina = Disciplina.id \
+        ORDER BY Arquivo.id DESC LIMIT 10", conn)
+    return render_template('dashboard.html',
+                           meus_arquivos=meus_arquivos,
+                           arquivos_gerais=arquivos_gerais)
 
 
 @app.route('/pesquisar',  methods=['GET', 'POST'])
@@ -147,8 +158,13 @@ def pesquisar():
         departamento = request.form['departamento']
         if(departamento == ''):
             departamento = False
-        return redirect(url_for('pesquisa_result', arquivo=arquivo.capitalize(), disciplina=disciplina, ano=ano,
-                                semestre=semestre, professor=professor, departamento=departamento))
+        return redirect(url_for('pesquisa_result',
+                        arquivo=arquivo.capitalize(),
+                        departamento=departamento,
+                        disciplina=disciplina,
+                        professor=professor,
+                        semestre=semestre,
+                        ano=ano))
 
 
 @app.route('/pesquisa/result')
@@ -158,7 +174,7 @@ def pesquisa_result(arquivo='False', disciplina='False', ano='False',
 
     conn = sqlite3.connect('instance/database.sqlite')
     query = f"SELECT Arquivo.tipo, Disciplina.nome as disciplina, \
-    Arquivo.nome as arquivo, Arquivo.Ano, Arquivo.semestre, Arquivo.professor, \
+    Arquivo.nome as arquivo,Arquivo.Ano,Arquivo.semestre,Arquivo.professor, \
     Departamento.nome as departamento \
     FROM Arquivo JOIN Disciplina \
     ON Arquivo.id_disciplina=Disciplina.id JOIN Departamento \
@@ -218,10 +234,13 @@ def contribuir():
     semester = ((today.month-1)//6)+1
 
     if request.method == 'GET':
-        return render_template('contribuir.html', cursos=cursos, disciplinas=disciplinas, year=year, semester=semester)
+        return render_template('contribuir.html',
+                               disciplinas=disciplinas,
+                               semester=semester,
+                               cursos=cursos,
+                               year=year)
 
     elif request.method == 'POST':
-        curso = request.form["curso"]
         disciplina = request.form["disciplina"]
         tipoArquivo = request.form["tipoArquivo"].capitalize()
         ano = request.form["ano"]
@@ -229,7 +248,8 @@ def contribuir():
         professorName = request.form["professorName"]
 
         user_id = current_user.get_id()
-        user_id = pd.read_sql(f"SELECT id FROM Users WHERE email='{user_id}'", conn).iloc[0]["id"]
+        user_id = pd.read_sql(f"SELECT id FROM Users WHERE email='{user_id}'",
+                              conn).iloc[0]["id"]
 
         disciplina_id = pd.read_sql(
             f"SELECT id FROM Disciplina WHERE nome='{disciplina}'", conn)
@@ -240,17 +260,26 @@ def contribuir():
             if os.path.exists(os.getcwd() + '/uploads') is False:
                 os.makedirs('uploads')
             file.save(os.path.join(
-                app.config["UPLOAD_DEST"], str(today.microsecond) + "_" + newFileName))
+                app.config["UPLOAD_DEST"], str(today.microsecond) + "_"
+                + newFileName))
             fileName = str(today.microsecond) + "_" + newFileName
         else:
             fileName = "no_file_selected"
 
         c.execute(
-            f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', 'id_disciplina', 'tipo', 'professor', 'ano', 'semestre') VALUES ('{user_id}', '{fileName}', '{fileName}', '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', '{professorName}', '{ano}', '{semestre}' )")
+            f"INSERT INTO Arquivo ('id_contribuinte', 'nome', 'link', \
+            'id_disciplina', 'tipo', 'professor', 'ano', 'semestre') \
+            VALUES ('{user_id}', '{fileName}', '{fileName}', \
+            '{disciplina_id.iloc[0]['id']}', '{tipoArquivo}', \
+            '{professorName}', '{ano}', '{semestre}' )")
 
         conn.commit()
 
-        return render_template('contribuir.html', cursos=cursos, disciplinas=disciplinas, year=year, semester=semester)
+        return render_template('contribuir.html',
+                               disciplinas=disciplinas,
+                               semester=semester,
+                               cursos=cursos,
+                               year=year)
 
 
 @app.route('/termos_condicoes')

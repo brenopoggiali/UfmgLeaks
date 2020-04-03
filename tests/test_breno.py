@@ -1,5 +1,4 @@
 import sqlite3
-import db as db
 import pandas as pd
 import app as application
 import urllib.parse as parse
@@ -8,6 +7,7 @@ from flask_script import Manager
 
 conn = sqlite3.connect('instance/database.sqlite')
 
+
 class Tests(TestCase):
     def setUp(self):
         self.app = application.app
@@ -15,8 +15,8 @@ class Tests(TestCase):
 
     def test_default_user(self):
         email = "foo@bar.tld"
-        conn = sqlite3.connect('instance/database.sqlite')
-        users = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
+        users = pd.read_sql(
+            f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
         assert users.size == 1
 
     def test_get_login(self):
@@ -35,14 +35,14 @@ class Tests(TestCase):
         response = self.client.post("/login", data=user)
         redirect = response.location
         assert response.status_code == 200
-        assert redirect == None
+        assert redirect is None
 
     def test_invalid_password(self):
         user = dict(email="foo@bar.tld", password="secretx")
         response = self.client.post("/login", data=user)
         redirect = response.location
         assert response.status_code == 200
-        assert redirect == None
+        assert redirect is None
 
     def test_logout(self):
         # Login
@@ -64,15 +64,19 @@ class Tests(TestCase):
 
     def test_post_register(self):
         # Before register
-        new_user = dict(nome_pessoa="John Snow", email="john@snow.com", password="abcdef")
+        new_user = dict(nome_pessoa="John Snow",
+                        email="john@snow.com",
+                        password="abcdef")
         email = new_user["email"]
-        user = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
+        user = pd.read_sql(
+            f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
         assert user.size == 0
 
         # After register
         response = self.client.post("/register", data=new_user)
         redirect = parse.urlparse(response.location).path
-        user = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
+        user = pd.read_sql(
+            f"SELECT email FROM Users WHERE Users.email = '{email}'", conn)
         assert response.status_code == 302
         assert redirect == "/login"
         assert user.size == 1
@@ -84,14 +88,18 @@ class Tests(TestCase):
 
     def test_post_register_existing_user(self):
         # Check user exists
-        new_user = dict(nome_pessoa="John Snow", email="foo@bar.tld", password="abcdef")
+        new_user = dict(nome_pessoa="John Snow",
+                        email="foo@bar.tld",
+                        password="abcdef")
         email = new_user["email"]
-        user = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
+        user = pd.read_sql(
+            f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
         assert user.size == 1
         # Trying to register again
         response = self.client.post("/register", data=new_user)
         redirect = parse.urlparse(response.location).path
-        user = pd.read_sql(f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
+        user = pd.read_sql(
+            f"SELECT email FROM Users WHERE Users.email='{email}'", conn)
         assert response.status_code == 302
         assert redirect == "/register"
         assert user.size == 1
@@ -124,7 +132,7 @@ class Tests(TestCase):
         response = self.client.get("/termos_condicoes")
         redirect = response.location
         assert response.status_code == 200
-        assert redirect == None
+        assert redirect is None
 
     def test_access_search_result_with_login(self):
         # Login
@@ -134,7 +142,7 @@ class Tests(TestCase):
         response = self.client.get("/pesquisa/result")
         redirect = response.location
         assert response.status_code == 200
-        assert redirect == None
+        assert redirect is None
 
     def test_access_search_with_login(self):
         # Login
@@ -144,7 +152,7 @@ class Tests(TestCase):
         response = self.client.get("/pesquisar")
         redirect = response.location
         assert response.status_code == 200
-        assert redirect == None
+        assert redirect is None
 
     def test_access_contribute_with_login(self):
         # Login
@@ -154,7 +162,7 @@ class Tests(TestCase):
         response = self.client.get("/contribuir")
         redirect = response.location
         assert response.status_code == 200
-        assert redirect == None
+        assert redirect is None
 
     def test_access_dashboard_with_login(self):
         # Login
@@ -164,14 +172,19 @@ class Tests(TestCase):
         response = self.client.get("/dashboard")
         redirect = response.location
         assert response.status_code == 200
-        assert redirect == None
+        assert redirect is None
 
     def test_post_search_with_login(self):
         # Login
         user = dict(email="foo@bar.tld", password="secret")
         self.client.post("/login", data=user)
         # Post search
-        data = dict(tipoArquivo='Prova', disciplina='', ano='', semestre='', professor='', departamento='')
+        data = dict(tipoArquivo='Prova',
+                    disciplina='',
+                    ano='',
+                    semestre='',
+                    professor='',
+                    departamento='')
         response = self.client.post("/pesquisar", data=data)
         redirect = parse.urlparse(response.location).path
         assert response.status_code == 302

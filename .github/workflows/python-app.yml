@@ -29,4 +29,4 @@ jobs:
         pip install -r requirements.txt
     - name: Test with unittest
       run: |
-        python3 -m unittest tests/test_*.py
+        python3 -m unittest discover tests "test_*.py"

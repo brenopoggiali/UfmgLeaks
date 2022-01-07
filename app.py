@@ -10,6 +10,7 @@ from flask_login import LoginManager, login_user, logout_user, \
                         login_required, current_user
 
 app = Flask(__name__)
+app.jinja_options = {}
 app.secret_key = 'super secret string'
 bcrypt = Bcrypt(app)
 login_manager = LoginManager()
